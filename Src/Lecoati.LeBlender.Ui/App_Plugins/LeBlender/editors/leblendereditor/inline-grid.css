@@ -1,0 +1,19 @@
+.inline-grid {
+	padding: 10px;
+}
+
+@media(max-width: 1024px) {
+	.inline-grid {
+		display: none;
+	}
+}
+
+.inline-grid label.control-label {
+	float: none;
+	width: 100%;
+}
+
+.inline-grid .controls-row {
+	margin-left: 0;
+	overflow-x: auto;
+}
