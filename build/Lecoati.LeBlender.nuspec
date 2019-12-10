@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Lecoati.LeBlender</id>
-        <version>1.0.9-beta2-umw-1.0.0</version>
+        <version>1.0.0</version>
         <title>Umbraco LeBlender</title>
         <authors>LECOATI</authors>
         <owners>LECOATI</owners>
         <projectUrl>http://www.lecoati.com/</projectUrl>
-        <description>Umbarco LeBlender</description>
-        <summary>Umbarco LeBlender</summary>
+        <description>Umbarco LeBlender ver. 1.0.9-beta2, UMW ver. 1.0.0</description>
+        <summary>Umbarco LeBlender, modifications by Umwelt</summary>
         <language>en-US</language>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
         <tags>LECOATI</tags>
