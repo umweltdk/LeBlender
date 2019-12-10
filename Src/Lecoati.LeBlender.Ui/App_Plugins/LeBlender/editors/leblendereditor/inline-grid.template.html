@@ -1,0 +1,9 @@
+<div class="inline-grid" ng-if="configLoaded" ng-model="value">
+	<div class="list list-field" ng-repeat="item in value track by $index">
+
+		<umb-control-group label="{{property.$editor.name}}" description="{{property.$editor.description}}"
+			ng-repeat="property in item | LeBlenderOrderObjectBy:'$order':false">
+			<blender-editor-wrapper property="property" item="item"></blender-editor-wrapper>
+		</umb-control-group>
+	</div>
+</div>
