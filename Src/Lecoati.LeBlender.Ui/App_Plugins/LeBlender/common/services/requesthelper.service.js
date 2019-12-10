@@ -44,10 +44,10 @@
 
             /*********************/
             /*********************/
-            setGridEditors: function (data) {
+            setGridEditors: function (data, updateModel) {
 
                 var url = "/umbraco/backoffice/leblender/Helper/SaveEditorConfig";
-                var resultParameters = { config: JSON.stringify(data, null, 4), configPath: configPath };
+                var resultParameters = { config: JSON.stringify(data, null, 4), configPath: configPath, updateModel: JSON.stringify(updateModel, null, 4) };
 
                 //$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
                 return $http.post(url, resultParameters, {
