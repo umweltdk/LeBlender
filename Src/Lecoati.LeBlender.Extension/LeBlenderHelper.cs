@@ -140,6 +140,73 @@ namespace Lecoati.LeBlender.Extension
         }
 
         /// <summary>
+        /// Update xml cache for nodes using this specific grid editor - if the editor alias is changed without updating the xml cache, the editor view breaks in the umbraco backoffice
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>string responseMessage</returns>
+        internal static string UpdateGridNodes(GridUpdateModel model)
+        {
+            var responseMessage = "";
+            try
+            {
+                if (model != null)
+                {
+                    var contentService = UmbracoContext.Current.Application.Services.ContentService;
+                    List<IContent> nodes = new List<IContent>();
+                    var rootContent = contentService.GetRootContent();
+                    if (rootContent != null && rootContent.Any())
+                    {
+                        foreach (var rootNode in rootContent)
+                        {
+                            GetGridNodes(rootNode, nodes);
+                        }
+                    }
+
+                    if (nodes.Any())
+                    {
+                        foreach (var node in nodes)
+                        {
+                            if (node.Properties.Any(x => x.PropertyType.PropertyEditorAlias == "Umbraco.Grid"))
+                            {
+                                var gridProperties = node.Properties.Where(x => x.PropertyType.PropertyEditorAlias == "Umbraco.Grid").ToList();
+                                foreach (var gridProperty in gridProperties)
+                                {
+                                    if (gridProperty.Value != null)
+                                    {
+                                        var jsonObject = JObject.Parse(gridProperty.Value.ToString());
+                                        UpdateGridEditorAlias(jsonObject, model);
+                                        node.SetValue(gridProperty.Alias, jsonObject.ToString());
+                                        if (node.Published)
+                                        {
+                                            contentService.SaveAndPublishWithStatus(node, raiseEvents: false);
+                                        }
+                                        else
+                                        {
+                                            contentService.Save(node, raiseEvents: false);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        responseMessage = $"Successfully updated Editor Alias. Old alias: {model.OldValue}. New alias: {model.NewValue}";
+                    }
+                }
+                else
+                {
+                    responseMessage = "GridUpdateModel value was null, failed to update gridEditor";
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<Helper>($"Could not update grid items", ex);
+                responseMessage = ex.Message;
+            }
+
+            return responseMessage;
+        }
+
+
+        /// <summary>
         /// Get and cache LeBlender Controllers
         /// </summary>
         /// <returns></returns>
@@ -258,6 +325,61 @@ namespace Lecoati.LeBlender.Extension
         private static UmbracoHelper GetUmbracoHelper()
         {
             return new UmbracoHelper(UmbracoContext.Current);
+        }
+
+        /// <summary>
+        /// Get all nodes in the content tree which has associated properties of the type "Umbraco.Grid"
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="nodes"></param>
+        /// <returns></returns>
+        private static bool GetGridNodes(IContent node, List<IContent> nodes)
+        {
+            if (node.Children().Any())
+            {
+                foreach (var child in node.Children())
+                {
+                    GetGridNodes(child, nodes);
+                }
+                if (node.PropertyTypes.Any(x => x.PropertyEditorAlias == "Umbraco.Grid"))
+                {
+                    nodes.Add(node);
+                }
+                return true;
+            }
+            if (node.PropertyTypes.Any(x => x.PropertyEditorAlias == "Umbraco.Grid"))
+            {
+                nodes.Add(node);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Replace editor alias in json object
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private static bool UpdateGridEditorAlias(JToken token, GridUpdateModel model)
+        {
+            if (token.HasValues)
+            {
+                foreach (JToken child in token.Children())
+                {
+                    UpdateGridEditorAlias(child, model);
+                }
+                // we are done parsing and this is a parent node
+                return true;
+            }
+            var name = ((JProperty)token.Parent).Name;
+            if (name == "alias")
+            {
+                if (((JProperty)token.Parent).Value.ToString() == model.OldValue)
+                {
+                    ((JProperty)token.Parent).Value = model.NewValue;
+                }
+            }
+            return false;
         }
 
         #endregion

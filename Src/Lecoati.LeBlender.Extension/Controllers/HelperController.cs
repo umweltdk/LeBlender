@@ -31,8 +31,15 @@ namespace Lecoati.LeBlender.Extension.Controllers
         [HttpPost]
         public ActionResult SaveEditorConfig()
         {
+            var message = "Saved";
             var config = Request["config"];
             var configPath = Request["configPath"];
+            var updateModel = JsonConvert.DeserializeObject<Models.GridUpdateModel>(Request["updateModel"]);
+
+            if (updateModel != null)
+            {
+                message = Helper.UpdateGridNodes(updateModel);
+            }
 
             // Update
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(System.Web.HttpContext.Current.Server.MapPath(configPath)))
@@ -46,7 +53,7 @@ namespace Lecoati.LeBlender.Extension.Controllers
             ApplicationContext.ApplicationCache.RuntimeCache.ClearCacheByKeySearch("LEBLENDEREDITOR");
             ApplicationContext.ApplicationCache.RuntimeCache.ClearCacheItem(typeof(BackOfficeController) + "GetGridConfig");
 
-            return Json(new { Message = "Saved" });
+            return Json(new { Message = message });
         }
 
     }

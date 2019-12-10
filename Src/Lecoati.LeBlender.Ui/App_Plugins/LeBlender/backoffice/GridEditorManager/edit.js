@@ -118,6 +118,11 @@
         // save editor values
         $scope.save = function () {
 
+            var updateModel = null;
+            if ($scope.model.value.alias !== $routeParams.id) {
+                updateModel = { oldValue: $routeParams.id, newValue: $scope.model.value.alias };
+            }
+
             var submitPlease = true;
             if ($scope.model.value) {
                 $scope.$broadcast('gridEditorSaving');
@@ -129,7 +134,7 @@
                 }
             });
 
-            LeBlenderRequestHelper.setGridEditors($scope.editors).then(function (response) {
+            LeBlenderRequestHelper.setGridEditors($scope.editors, updateModel).then(function (response) {
                 notificationsService.success("Success", $scope.model.value.name + " has been saved");
                 delete $scope.selectedPropertyGridEditor;
                 $scope.getSetting($scope.model.value.alias);
