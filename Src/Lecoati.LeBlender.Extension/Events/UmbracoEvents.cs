@@ -1,19 +1,14 @@
 ﻿//clear cache on publish
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Umbraco.Core;
-using Umbraco.Core.Models;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Publishing;
-using Umbraco.Web;
-using umbraco.interfaces;
 using System.Web;
-using Lecoati.LeBlender.Extension;
+using Umbraco.Core.Persistence;
+using Lecoati.LeBlender.Extension.Helpers;
+using Lecoati.LeBlender.Extension.Models.Database;
 
 namespace Lecoati.LeBlender.Extension.Events
 {
@@ -36,6 +31,26 @@ namespace Lecoati.LeBlender.Extension.Events
 
         protected override void ApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
+
+            var ctx = ApplicationContext.Current.DatabaseContext;
+            var schemaHelper = new DatabaseSchemaHelper(ctx.Database, ApplicationContext.Current.ProfilingLogger.Logger, ctx.SqlSyntax);
+            
+            if (!schemaHelper.TableExist("leBlenderGridEditors"))
+            {
+                // Create LeBlender Database Table
+                schemaHelper.CreateTable<LeblenderGridEditorModel>(false);
+                if (!schemaHelper.TableExist("leBlenderProperties"))
+                {
+                    schemaHelper.CreateTable<LeblenderPropertyModel>(false);
+                }
+            }
+            // Check if table exists
+            else if (!schemaHelper.TableExist("leBlenderProperties"))
+            {
+                schemaHelper.CreateTable<LeblenderPropertyModel>(false);
+            }
+            DatabaseMigrationHelper.UpdateWithExistingEditors();
+
 
             // Upgrate default view path for LeBlender 1.0.0
             var gridConfig = HttpContext.Current.Server.MapPath("~/Config/grid.editors.config.js");

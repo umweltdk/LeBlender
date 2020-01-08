@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <RestorePackages>true</RestorePackages>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -297,6 +298,9 @@
   <ItemGroup>
     <Compile Include="Controllers\LeBlenderController.cs" />
     <Compile Include="Controllers\LeBlenderEditorManagerTreeController.cs" />
+    <Compile Include="Helpers\DatabaseHelper.cs" />
+    <Compile Include="Helpers\DatabaseMigrationHelper.cs" />
+    <Compile Include="Models\Database\LeblenderGridEditorModel.cs" />
     <Compile Include="Models\GridEditorsConfig\Editor.cs" />
     <Compile Include="Models\GridEditorsConfig\GridEditorsConfig.cs" />
     <Compile Include="Models\GridUpdateModel.cs" />

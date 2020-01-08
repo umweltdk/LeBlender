@@ -1,4 +1,5 @@
 ﻿using Lecoati.LeBlender.Extension;
+using Lecoati.LeBlender.Extension.Helpers;
 using Lecoati.LeBlender.Extension.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,8 @@ namespace Lecoati.LeBlender.Extension.Controllers
             var nodes = new TreeNodeCollection();
             if (id == "-1")
             {
-                IList<GridEditor> editors = Helper.GetLeBlenderGridEditors(false).ToList();
+                IList<GridEditor> editors = DatabaseHelper.GetEditors();
+
                 foreach (var editor in editors)
                 {
                     nodes.Add(this.CreateTreeNode(editor.Alias, id, queryStrings, editor.Name, editor.Icon, false));
