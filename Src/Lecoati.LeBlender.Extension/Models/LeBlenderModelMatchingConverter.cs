@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Lecoati.LeBlender.Extension.Models
 {
@@ -26,13 +25,13 @@ namespace Lecoati.LeBlender.Extension.Models
             JObject jsonObject = JObject.Load(reader);
             var properties = jsonObject.Properties().ToList();
 
-            IList<LeBlenderPropertyModel> bpml = new List<LeBlenderPropertyModel>();
+            IList<LeBlenderConfigModel> bpml = new List<LeBlenderConfigModel>();
 
             foreach (var property in properties)
             {
                 if (property.Any())
                 {
-                    bpml.Add(JsonConvert.DeserializeObject<LeBlenderPropertyModel>(property.First().ToString()));
+                    bpml.Add(JsonConvert.DeserializeObject<LeBlenderConfigModel>(property.First().ToString()));
                 }
             }
 

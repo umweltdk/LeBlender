@@ -1,0 +1,12 @@
+﻿.working {
+    z-index: 1001;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: .5;
+}
+
+.umb-panel-body{
+    padding:0 2rem;
+}
