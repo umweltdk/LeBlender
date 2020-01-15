@@ -116,6 +116,8 @@
 		"~/App_Plugins/LeBlender/Common/Directive/blendereditorwrapper.js",
 		"~/App_Plugins/LeBlender/Common/Directive/propertygrideditorwrapper.js",
 
+		"~/App_Plugins/LeBlender/Common/config/requestInterceptor.js",
+
 		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/edit.js",
 		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/delete.js",
 		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/sort.js",
