@@ -58,16 +58,6 @@
 					});
 			},
 
-			updatePropertySortOrder: function (items) {
-				var url = "/umbraco/backoffice/leblender/Helper/UpdateSortOrder";
-				var data = { items: items };
-				return $http.post(url, data)
-					.then(function successCallback(response) {
-					}, function errorCallback(reponse) {
-						console.error(response.data.Message);
-					});
-			},
-
 			/*********************/
 			/*********************/
 			updateGridEditor: function (editor) {
