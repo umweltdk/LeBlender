@@ -120,7 +120,7 @@
 		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/delete.js",
 		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/sort.js",
 
-    "~/App_Plugins/LeBlender/editors/leblendereditor/inline-grid.directive.js",
+        "~/App_Plugins/LeBlender/editors/leblendereditor/inline-grid.directive.js",
 		"~/App_Plugins/LeBlender/editors/leblendereditor/leblenderproperties.controller.js",
 		"~/App_Plugins/LeBlender/editors/leblendereditor/leblendereditor.controller.js",
 		"~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.prevalues.controller.js",
