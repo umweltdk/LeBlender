@@ -1,79 +1,53 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Umbraco.Core;
-using Umbraco.Core.Models;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core.PropertyEditors;
-using Umbraco.Web;
+using Umbraco.Core.Persistence;
+using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Lecoati.LeBlender.Extension.Models
 {
+    [TableName("LeBlenderProperty")]
+    [PrimaryKey("Id", autoIncrement = true)]
     public class LeBlenderPropertyModel
     {
+        [Column("Id")]
+        [JsonProperty("id")]
+        [PrimaryKeyColumn(AutoIncrement = true)]
+        public int Id { get; set; }
 
-        [JsonProperty("dataTypeGuid")]
-        public String DataTypeGuid { get; set; }
+        [Column("Name")]
+        [JsonProperty("name")]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string Name { get; set; }
 
-        [JsonProperty("editorName")]
-        public String Name { get; set; }
+        [Column("Alias")]
+        [JsonProperty("alias")]
+        public string Alias { get; set; }
 
-        [JsonProperty("editorAlias")]
-        public String Alias { get; set; }
+        [ResultColumn]
+        [JsonProperty("oldAlias")]
+        public string OldAlias { get; set; }
 
-        [JsonProperty("value")]
-        public object Value { get; set; }
+        [Column("Description")]
+        [JsonProperty("description")]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string Description { get; set; }
+        
+        [Column("DataType")]
+        [JsonProperty("dataType")]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string DataType { get; set; }
 
-        public T GetValue<T>()
-        {
+        [Column("PropertyType")]
+        [JsonProperty("propertyType")]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string PropertyType { get; set; }
 
-            //var targetContentType = Helper.GetTargetContentType();
-            var targetDataType = Helper.GetTargetDataTypeDefinition(Guid.Parse(DataTypeGuid));
+        [Column("SortOrder")]
+        [JsonProperty("sortOrder")]
+        public int SortOrder { get; set; }
 
-            var properyType = new PublishedPropertyType(Helper.GetTargetContentType(),
-                new PropertyType(new DataTypeDefinition(targetDataType.PropertyEditorAlias)
-                {
-                    Id = targetDataType.Id
-                }));
-
-            // Try Umbraco's PropertyValueConverters
-            var converters = PropertyValueConvertersResolver.Current.Converters.ToArray();
-            foreach (var converter in converters.Where(x => x.IsConverter(properyType)))
-            {
-                // Convert the type using a found value converter
-                var value2 = converter.ConvertDataToSource(properyType, Value, false);
-
-                // If the value is of type T, just return it
-                if (value2 is T)
-                    return (T)value2;
-
-                // If ConvertDataToSource failed try ConvertSourceToObject.
-                var value3 = converter.ConvertSourceToObject(properyType, value2, false);
-
-                // If the value is of type T, just return it
-                if (value3 is T)
-                    return (T)value3;
-
-                // Value is not final value type, so try a regular type conversion aswell
-                var convertAttempt = value2.TryConvertTo<T>();
-                if (convertAttempt.Success)
-                    return convertAttempt.Result;
-            }
-
-            // if already the requested type, return
-            if (Value is T) return (T)Value;
-
-            // if can convert to requested type, return
-            var convert = Value.TryConvertTo<T>();
-            if (convert.Success) return convert.Result;
-
-            return default(T);
-
-        }
-
-
-
+        [JsonIgnore]
+        [ForeignKey(typeof(LeBlenderConfigModel), Name = "LeBlenderConfigId")]
+        [Index(IndexTypes.NonClustered, Name = "LeBlenderConfigId")]
+        public int LeBlenderConfigId { get; set; }
     }
 }

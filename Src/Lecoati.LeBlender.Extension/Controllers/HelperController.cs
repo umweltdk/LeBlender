@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Lecoati.LeBlender.Extension.Helpers;
+using Lecoati.LeBlender.Extension.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Umbraco.Core.Models;
-using Umbraco.Web;
-using Umbraco.Web.Editors;
-using Umbraco.Web.Models;
+using Umbraco.Core.Logging;
 using Umbraco.Web.Mvc;
-using Umbraco.Web.UI.Pages;
 
 namespace Lecoati.LeBlender.Extension.Controllers
 {
@@ -27,33 +23,93 @@ namespace Lecoati.LeBlender.Extension.Controllers
             return View("/views/Partials/" + view + ".cshtml", model);
         }
 
+        [HttpPost]
+        public ActionResult DeleteEditor(int id)
+        {
+            var message = $"Deleted GridEditor with Id: {id} from the database";
+            try
+            {
+                var dbHelper = new DatabaseHelper();
+                dbHelper.DelteGridEditor(id);
+                var editors = dbHelper.GetEditors();
+                RuntimeCacheHelper.SetCacheItem("LeBlenderEditors", editors, 1);
+            }
+            catch (Exception ex)
+            {
+                message = $"Error while trying to delete GridEditor with id: {id} from the database";
+                LogHelper.Error<HelperController>($"Error while trying to delete GridEditor with id: {id} from the database", ex);
+            }
+            return Content(message);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateGridSortOrder(Dictionary<int, int> items)
+        {
+            var message = "Updated grid sortorder";
+            try
+            {
+                var dbHelper = new DatabaseHelper();
+                if(items.Count > 0)
+                {
+                    foreach(var item in items)
+                    {
+                        // Key = id, Value = SortOrder
+                        dbHelper.UpdateGridSortOrder(item.Key, item.Value);
+                    }
+                }
+
+                // Update runtimecache
+                var editors = dbHelper.GetEditors();
+                RuntimeCacheHelper.SetCacheItem("LeBlenderEditors", editors, 1);
+            }
+            catch (Exception ex)
+            {
+                message = "Error while trying to update grid sortorder";
+                LogHelper.Error<HelperController>("Error while trying to update grid sortorder in the database", ex);
+            }
+            return Json(new { Message = message });
+        }
+
         [ValidateInput(false)]
         [HttpPost]
-        public ActionResult SaveEditorConfig()
+        public ActionResult UpdateEditor()
         {
             var message = "Saved";
-            var config = Request["config"];
-            var configPath = Request["configPath"];
-            var updateModel = JsonConvert.DeserializeObject<Models.GridUpdateModel>(Request["updateModel"]);
-
-            if (updateModel != null)
+            try
             {
-                message = Helper.UpdateGridNodes(updateModel);
-            }
+                var editor = JsonConvert.DeserializeObject<LeBlenderGridEditorModel>(Request["editor"]);
+                var dbHelper = new DatabaseHelper();
+                var LeBlenderGridEditorId = dbHelper.InsertOrUpdateGridEditor(editor);
 
-            // Update
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(System.Web.HttpContext.Current.Server.MapPath(configPath)))
+                if (editor.Config.Count > 0)
+                {
+                    dbHelper.InsertOrUpdateConfig(LeBlenderGridEditorId, editor.Config);
+                }
+
+                // Update runtimecache
+                var editors = dbHelper.GetEditors();
+                RuntimeCacheHelper.SetCacheItem("LeBlenderEditors", editors, 1);
+            }
+            catch (Exception ex)
             {
-                file.Write(config);
+                LogHelper.Error<HelperController>($"Error while trying to update editor", ex);
+                message = $"{ex.Message} - {ex.InnerException?.Message}";
             }
-
-            // Refrech GridConfig for next use
-            HttpContext.Cache.Remove("LeBlenderControllers");
-            HttpContext.Cache.Remove("LeBlenderGridEditorsList");
-            ApplicationContext.ApplicationCache.RuntimeCache.ClearCacheByKeySearch("LEBLENDEREDITOR");
-            ApplicationContext.ApplicationCache.RuntimeCache.ClearCacheItem(typeof(BackOfficeController) + "GetGridConfig");
-
             return Json(new { Message = message });
+        }
+
+        [ValidateInput(false)]
+        public ActionResult GetEditors()
+        {
+            // Check if they exist in cache
+            var editors = RuntimeCacheHelper.GetCachedItem<IOrderedEnumerable<LeBlenderGridEditorModel>>("LeBlenderEditors");
+            if(editors == null)
+            {
+                var dbHelper = new DatabaseHelper();
+                editors = dbHelper.GetEditors();
+                RuntimeCacheHelper.SetCacheItem("LeBlenderEditors", editors, 1);
+            }
+            return Content(JsonConvert.SerializeObject(editors));
         }
 
     }

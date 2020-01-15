@@ -1,9 +1,4 @@
-﻿using Lecoati.LeBlender.Extension;
-using Lecoati.LeBlender.Extension.Helpers;
-using Lecoati.LeBlender.Extension.Models;
-using System.Collections.Generic;
-using System.Linq;
-using umbraco;
+﻿using Lecoati.LeBlender.Extension.Helpers;
 using umbraco.BusinessLogic.Actions;
 using Umbraco.Core;
 using Umbraco.Core.Services;
@@ -46,7 +41,8 @@ namespace Lecoati.LeBlender.Extension.Controllers
             var nodes = new TreeNodeCollection();
             if (id == "-1")
             {
-                IList<GridEditor> editors = DatabaseHelper.GetEditors();
+                var databaseHelper = new DatabaseHelper();
+                var editors = databaseHelper.GetEditors();
 
                 foreach (var editor in editors)
                 {

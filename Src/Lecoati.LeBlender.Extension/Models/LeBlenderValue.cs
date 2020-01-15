@@ -12,7 +12,7 @@ namespace Lecoati.LeBlender.Extension.Models
     [JsonConverter(typeof(LeBlenderModelMatchingConverter))]
     public class LeBlenderValue
     {
-        internal IEnumerable<LeBlenderPropertyModel> Properties { get; set; }
+        internal IEnumerable<LeBlenderConfigModel> Properties { get; set; }
 
         #region Helper Methods
 
@@ -58,12 +58,12 @@ namespace Lecoati.LeBlender.Extension.Models
             return GetProperty(propertyAlias) != null;
         }
 
-        private bool IsEmptyProperty(LeBlenderPropertyModel property)
+        private bool IsEmptyProperty(LeBlenderConfigModel property)
         {
             return (property == null || property.Value == null || string.IsNullOrEmpty(property.Value.ToString()));
         }
 
-        private LeBlenderPropertyModel GetProperty(string propertyAlias)
+        private LeBlenderConfigModel GetProperty(string propertyAlias)
         {
             return Properties.FirstOrDefault(p => p.Alias.ToLower().Equals(propertyAlias.ToLower()));
         }

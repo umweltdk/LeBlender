@@ -299,11 +299,10 @@
     <Compile Include="Controllers\LeBlenderController.cs" />
     <Compile Include="Controllers\LeBlenderEditorManagerTreeController.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
-    <Compile Include="Helpers\DatabaseMigrationHelper.cs" />
-    <Compile Include="Models\Database\LeblenderGridEditorModel.cs" />
+    <Compile Include="Helpers\RuntimeCacheHelper.cs" />
+    <Compile Include="Models\LeBlenderPropertyModel.cs" />
     <Compile Include="Models\GridEditorsConfig\Editor.cs" />
     <Compile Include="Models\GridEditorsConfig\GridEditorsConfig.cs" />
-    <Compile Include="Models\GridUpdateModel.cs" />
     <Compile Include="Models\Manifest\PackageManifest.cs" />
     <Compile Include="Models\Manifest\Editor.cs" />
     <Compile Include="Models\Manifest\Prevalues.cs" />
@@ -315,10 +314,10 @@
     <Compile Include="Events\UmbracoEvents.cs" />
     <Compile Include="JSonPresentationFormatter.cs" />
     <Compile Include="LeBlenderPartialCacher.cs" />
-    <Compile Include="Models\GridEditor.cs" />
+    <Compile Include="Models\LeBlenderGridEditorModel.cs" />
     <Compile Include="Models\LeBlenderValue.cs" />
     <Compile Include="Models\LeBlenderModelMatchingConverter.cs" />
-    <Compile Include="Models\LeBlenderPropertyModel.cs" />
+    <Compile Include="Models\LeBlenderConfigModel.cs" />
     <Compile Include="Models\LeBlenderModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LeBlenderHelper.cs" />
