@@ -21,11 +21,11 @@
                         return $.param(result);
                     }
                 })
-                .success(function (htmlResult) {
-                    if (htmlResult.trim().length > 0) {
-                        return htmlResult;
-                    }
-                });
+                    .success(function (htmlResult) {
+                        if (htmlResult.trim().length > 0) {
+                            return htmlResult;
+                        }
+                    });
 
                 return promise;
             },

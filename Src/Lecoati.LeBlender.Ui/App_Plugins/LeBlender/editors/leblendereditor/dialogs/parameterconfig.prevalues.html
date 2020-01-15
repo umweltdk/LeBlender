@@ -1,7 +1,5 @@
-<form name="editoreditorForm"
-      ng-controller="LeBlender.Dialog.ParameterConfig.Prevalues.Controller"
-      ng-submit="save()"
-      val-form-manager>
+<form name="editoreditorForm" ng-controller="LeBlender.Dialog.ParameterConfig.Prevalues.Controller" ng-submit="save()"
+    val-form-manager>
 
     <div class="umb-panel">
         <div class="umb-panel-body no-header with-footer">
@@ -13,7 +11,8 @@
                     <div class="control-group umb-control-group">
 
                         <umb-control-group label="Data type" description="">
-                            <select ng-options="datatype.guid as datatype.name for datatype in availableDataTypes" ng-model="model.value.dataType" required></select>
+                            <select ng-options="datatype.guid as datatype.name for datatype in availableDataTypes"
+                                ng-model="model.value.dataType" required></select>
                         </umb-control-group>
 
                         <umb-control-group label="Name" description="">
@@ -21,12 +20,14 @@
                         </umb-control-group>
 
                         <umb-control-group label="Alias" description="">
-                            <input class="umb-editor umb-textstring" type="text" ng-model="model.value.alias" required />
+                            <input class="umb-editor umb-textstring" type="text" ng-model="model.value.alias"
+                                required />
                         </umb-control-group>
 
                         <umb-control-group label="Description" description="">
-                            <textarea class="umb-editor umb-textstring" style="height: 100px;" ng-model="model.value.description" />
-                        </umb-control-group>
+                            <textarea class="umb-editor umb-textstring" style="height: 100px;"
+                                ng-model="model.value.description" />
+                            </umb-control-group>
 
                         <div ng-show="isCustom()">
                             <umb-control-group label="View" description="">

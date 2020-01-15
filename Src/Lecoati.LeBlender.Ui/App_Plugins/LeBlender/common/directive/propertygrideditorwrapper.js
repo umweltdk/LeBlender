@@ -11,7 +11,7 @@
             template: '<ng-form name="propertyForm"><div ng-include="view"></div></ng-form>',
 
             controller: function ($scope) {
-              
+
                 if (!$scope.value.config) {
                     $scope.value.config = {};
                 }

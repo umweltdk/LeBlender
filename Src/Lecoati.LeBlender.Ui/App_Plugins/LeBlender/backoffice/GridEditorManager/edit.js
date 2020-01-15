@@ -8,7 +8,7 @@
         $scope.legacyAdaptor = function (editor) {
 
             if (editor) {
-                                    
+
                 if (editor.view == "/App_Plugins/Lecoati.LeBlender/core/LeBlendereditor.html" ||
                     editor.view == "/App_Plugins/Lecoati.LeBlender/editors/leblendereditor/LeBlendereditor.html") {
                     editor.view = "/App_Plugins/LeBlender/editors/leblendereditor/LeBlendereditor.html";
@@ -65,11 +65,11 @@
             LeBlenderRequestHelper.getGridEditors().then(function (response) {
 
                 // init model
-                $scope.editors  = response.data
+                $scope.editors = response.data
 
                 // Init model value
                 $scope.model = {
-                    value : {
+                    value: {
                         name: "",
                         alias: "",
                         view: "",
@@ -99,7 +99,7 @@
                 $scope.initAutoPopulateAlias();
                 $scope.loaded = true;
                 $scope.$broadcast('gridEditorLoaded');
-                
+
             })
         };
 
@@ -144,7 +144,7 @@
                     editormanagerForm.$dirty = false;
                 }
 
-                if ($routeParams.id == -1) {                    
+                if ($routeParams.id == -1) {
                     editormanagerForm.$dirty = false;
                     contentEditingHelper.redirectToCreatedContent($scope.model.value.alias, true);
                 }
@@ -238,7 +238,7 @@
 
         // main method for autoPopulateAlias
         $scope.autoPopulateAlias = function (name) {
-            var s = name.replace(/[^a-zA-Z0-9\s\.-]+/g, ''); 
+            var s = name.replace(/[^a-zA-Z0-9\s\.-]+/g, '');
             return s.toCamelCase();
         }
 
@@ -250,14 +250,13 @@
                 })
             }
         }
-        
+
         $scope.configChanged = function (textAreaconfig) {
             try {
                 var configValue = JSON.parse(textAreaconfig);
                 $scope.model.value.config = configValue;
             }
-            catch (e)
-            {
+            catch (e) {
 
             }
         };
