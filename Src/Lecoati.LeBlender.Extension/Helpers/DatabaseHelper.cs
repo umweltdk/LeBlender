@@ -149,6 +149,31 @@ namespace Lecoati.LeBlender.Extension.Helpers
             return editors.OrderBy(x => x.SortOrder);
         }
 
+        internal LeBlenderGridEditorModel GetGridEditor(string alias)
+        {
+            var editor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Alias = @0", alias);
+            if(editor != null)
+            {
+                var editorProperties = dbContext.Database.Fetch<LeBlenderConfigModel>("WHERE LeBlenderGridEditorId = @0", editor.Id);
+                var dict = new Dictionary<string, object>();
+                foreach (var editorProperty in editorProperties)
+                {
+                    if (editorProperty.HasProperties)
+                    {
+                        var editorConfigValues = dbContext.Database.Fetch<LeBlenderPropertyModel>("WHERE LeBlenderConfigId = @0", editorProperty.Id).OrderBy(x => x.SortOrder);
+                        dict.Add(editorProperty.Alias, editorConfigValues);
+                    }
+                    else
+                    {
+                        dict.Add(editorProperty.Alias, editorProperty.Data);
+                    }
+                }
+                editor.Config = dict;
+                return editor;
+            }
+            return null;
+        }
+
         internal int InsertOrUpdateGridEditor(LeBlenderGridEditorModel editor)
         {
             try
@@ -164,7 +189,7 @@ namespace Lecoati.LeBlender.Extension.Helpers
                 }
 
 
-                var existingEditor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Id = @0", editor.Id);
+                var existingEditor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Alias = @0", editor.Alias);
                 if (existingEditor != null)
                 {
                     existingEditor.Alias = editor.Alias;

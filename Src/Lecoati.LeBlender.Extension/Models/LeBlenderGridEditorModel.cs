@@ -53,7 +53,7 @@ namespace Lecoati.LeBlender.Extension.Models
         [ResultColumn]
         [JsonProperty("config")]
         public IDictionary<string, object> Config { get; set; }
-        
+                
         [ResultColumn]
         [JsonProperty("deletedPropertyIds")]
         public List<int> DeletedPropertyIds { get; set; } = new List<int>();

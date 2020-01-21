@@ -7,6 +7,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Publishing;
 using System.Web;
 using Lecoati.LeBlender.Extension.Helpers;
+using System.Web.Http;
 
 namespace Lecoati.LeBlender.Extension.Events
 {
@@ -24,6 +25,11 @@ namespace Lecoati.LeBlender.Extension.Events
                 {
                     controller = "Helper",
                 }
+            );
+            RouteTable.Routes.MapRoute(
+              name: "Transfer",
+              url: "umbraco/api/Transfer/TransferEditor",
+              defaults: new { controller = "Transfer", action = "TransferEditor" }
             );
         }
 

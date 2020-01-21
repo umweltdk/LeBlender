@@ -1,4 +1,5 @@
 ﻿using Lecoati.LeBlender.Extension.Helpers;
+using umbraco;
 using umbraco.BusinessLogic.Actions;
 using Umbraco.Core;
 using Umbraco.Core.Services;
@@ -17,20 +18,30 @@ namespace Lecoati.LeBlender.Extension.Controllers
         protected override Umbraco.Web.Models.Trees.MenuItemCollection GetMenuForNode(string id, System.Net.Http.Formatting.FormDataCollection queryStrings)
         {
             var textService = ApplicationContext.Services.TextService;
-            var createText = textService.Localize($"actions/{ActionNew.Instance.Alias}");
-            var sortText = textService.Localize($"actions/{ActionSort.Instance.Alias}");
-            var refreshNodeText = textService.Localize($"actions/{ActionRefresh.Instance.Alias}");
             var deleteText = textService.Localize($"actions/{ActionDelete.Instance.Alias}");
+
+            var leBlenderCourierItem = new MenuItem
+            {
+                Alias = "leBlenderCourier",
+                Name = "LeBlender Courier",
+                Icon = "umb-deploy"
+            };
+
 
             var menu = new MenuItemCollection();
             if (id == Constants.System.Root.ToInvariantString())
             {
+                var createText = textService.Localize($"actions/{ActionNew.Instance.Alias}");
+                var sortText = textService.Localize($"actions/{ActionSort.Instance.Alias}");
+                var refreshNodeText = textService.Localize($"actions/{ActionRefresh.Instance.Alias}");
+
                 // root actions              
                 menu.Items.Add<CreateChildEntity, ActionNew>(createText);
                 menu.Items.Add<ActionSort>(sortText);
                 menu.Items.Add<RefreshNode, ActionRefresh>(refreshNodeText, true);
                 return menu;
             }
+            menu.Items.Add(leBlenderCourierItem);
             menu.Items.Add<ActionDelete>(deleteText);
             return menu;
         }

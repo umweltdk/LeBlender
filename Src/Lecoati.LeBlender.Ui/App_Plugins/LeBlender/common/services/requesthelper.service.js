@@ -75,6 +75,18 @@
 
 			},
 
+
+			transferEditor: function (editor, remoteUrl) {
+				var url = remoteUrl + "/umbraco/api/Transfer/TransferEditor";
+				var data = {
+					editor: JSON.stringify(editor, null, 4)
+				};
+
+				return $http.post(url, data).then(function (response) {
+					return response;
+				});
+			},
+
 			/*********************/
 			/*********************/
 			getAllDataTypes: function () {
