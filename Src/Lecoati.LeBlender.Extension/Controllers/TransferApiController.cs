@@ -26,13 +26,18 @@ namespace Lecoati.LeBlender.Extension.Controllers
                     {
                         dbHelper.InsertOrUpdateConfig(gridEditorId, gridEditor.Config);
                     }
+
+                    var editors = dbHelper.GetEditors();
+                    RuntimeCacheHelper.SetCacheItem("LeBlenderEditors", editors, 1);
                 }
+                
             }
             catch (Exception ex)
             {
                 message = $"Error while receiving editor for database storage. Message: {ex.Message}";
                 LogHelper.Error<HelperController>(message, ex);
             }
+            Response.AppendHeader("Access-Control-Allow-Origin", "*");
             return Content(message);
         }
     }

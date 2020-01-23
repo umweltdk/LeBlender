@@ -1,8 +1,8 @@
 <div class="umb-panel" ng-controller="leblender.editormanager.leBlenderCourier">
     <div class="umb-panel-body" style="padding:0 2rem;">
-        <div ng-hide="transferring">
+        <div ng-hide="transferring || transferDone">
             <p>Please select destination:</p>
-            <select ng-model="remoteUrl">
+            <select style="width:auto;" ng-model="remoteUrl">
                 <option ng-repeat="url in courierUrls" value="{{url}}">
                     {{url}}
                 </option>
@@ -12,14 +12,14 @@
                     <a href="" class="btn btn-link" ng-click="cancelCourier()">
                         <localize key="general_cancel">Cancel</localize>
                     </a>
-                    <a href="" ng-disabled="remoteUrl == null" class="btn btn-primary" ng-click="remoteUrl == null || transfer(remoteUrl)">
+                    <a href="" ng-disabled="remoteUrl == null" class="btn btn-primary" ng-click="remoteUrl == null || transferEditor(remoteUrl)">
                         <span>Transfer Editor</span>
                     </a>
                 </div>
             </div>
         </div>
         <div ng-show="transferDone">
-            <span>{{transferMessage}}</span>
+            <span ng-style="{'color':transfer.textColor}">{{transfer.message}}</span>
         </div>
         <div ng-show="transferring">
             <ul class="umb-load-indicator animated -half-second">
