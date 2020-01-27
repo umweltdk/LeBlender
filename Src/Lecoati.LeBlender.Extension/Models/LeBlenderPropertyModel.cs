@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
@@ -13,6 +14,11 @@ namespace Lecoati.LeBlender.Extension.Models
         [PrimaryKeyColumn(AutoIncrement = true)]
         public int Id { get; set; }
 
+        [Index(IndexTypes.UniqueNonClustered)]
+        [Column("Guid")]
+        [JsonProperty("guid")]
+        public Guid Guid { get; set; }
+
         [Column("Name")]
         [JsonProperty("name")]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -21,10 +27,6 @@ namespace Lecoati.LeBlender.Extension.Models
         [Column("Alias")]
         [JsonProperty("alias")]
         public string Alias { get; set; }
-
-        [ResultColumn]
-        [JsonProperty("oldAlias")]
-        public string OldAlias { get; set; }
 
         [Column("Description")]
         [JsonProperty("description")]

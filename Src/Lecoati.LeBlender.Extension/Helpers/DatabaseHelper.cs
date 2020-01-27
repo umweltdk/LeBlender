@@ -1,11 +1,8 @@
 ﻿using Lecoati.LeBlender.Extension.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -21,14 +18,16 @@ namespace Lecoati.LeBlender.Extension.Helpers
             dbContext = ApplicationContext.Current.DatabaseContext;
         }
 
-        internal void CreateOrUpdateTables()
+        public bool CreateTables()
         {
+            var importConfig = false;
             try
             {
                 var schema = new DatabaseSchemaHelper(dbContext.Database, ApplicationContext.Current.ProfilingLogger.Logger, dbContext.SqlSyntax);
                 if (!schema.TableExist("LeBlenderGridEditor"))
                 {
                     schema.CreateTable<LeBlenderGridEditorModel>(false);
+                    importConfig = true;
                 }
                 if (!schema.TableExist("LeBlenderConfig"))
                 {
@@ -38,7 +37,20 @@ namespace Lecoati.LeBlender.Extension.Helpers
                 {
                     schema.CreateTable<LeBlenderPropertyModel>(false);
                 }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<DatabaseHelper>($"Error while creating database tables", ex);
+            }
+            return importConfig;
+        }
 
+
+
+        internal void ImportGridEditorConfig()
+        {
+            try
+            {
                 // Read from the original LeBlender.editors.config.js file
                 var editors = Helper.GetLeBlenderGridEditors(false);
 
@@ -55,6 +67,7 @@ namespace Lecoati.LeBlender.Extension.Helpers
                         }
                         else
                         {
+                            current.Guid = Guid.NewGuid();
                             LeBlenderGridEditorId = dbContext.Database.Insert("LeBlenderGridEditor", "Id", true, current);
                         }
                         if (current.Config.Count > 0)
@@ -83,6 +96,7 @@ namespace Lecoati.LeBlender.Extension.Helpers
                                             {
                                                 properties[j].LeBlenderConfigId = int.Parse(LeBlenderConfigId.ToString());
                                                 properties[j].SortOrder = j;
+                                                properties[j].Guid = Guid.NewGuid();
                                                 dbContext.Database.Insert("LeBlenderProperty", "Id", properties[j]);
                                             }
                                         }
@@ -90,13 +104,6 @@ namespace Lecoati.LeBlender.Extension.Helpers
                                 }
                             }
                         }
-                    }
-
-                    var gridConfig = HttpContext.Current.Server.MapPath("~/Config/grid.editors.config.js");
-                    if (File.Exists(gridConfig))
-                    {
-                        LogHelper.Info<DatabaseHelper>($"Updated Database with existing GridEditors - Renaming old LeblenderGridEditor file({gridConfig})");
-                        File.Move(gridConfig, gridConfig.TrimEnd(".js") + "_backup" + ".js");
                     }
                 }
             }
@@ -149,49 +156,17 @@ namespace Lecoati.LeBlender.Extension.Helpers
             return editors.OrderBy(x => x.SortOrder);
         }
 
-        internal LeBlenderGridEditorModel GetGridEditor(string alias)
-        {
-            var editor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Alias = @0", alias);
-            if(editor != null)
-            {
-                var editorProperties = dbContext.Database.Fetch<LeBlenderConfigModel>("WHERE LeBlenderGridEditorId = @0", editor.Id);
-                var dict = new Dictionary<string, object>();
-                foreach (var editorProperty in editorProperties)
-                {
-                    if (editorProperty.HasProperties)
-                    {
-                        var editorConfigValues = dbContext.Database.Fetch<LeBlenderPropertyModel>("WHERE LeBlenderConfigId = @0", editorProperty.Id).OrderBy(x => x.SortOrder);
-                        dict.Add(editorProperty.Alias, editorConfigValues);
-                    }
-                    else
-                    {
-                        dict.Add(editorProperty.Alias, editorProperty.Data);
-                    }
-                }
-                editor.Config = dict;
-                return editor;
-            }
-            return null;
-        }
-
         internal int InsertOrUpdateGridEditor(LeBlenderGridEditorModel editor)
         {
             try
             {
-                if (editor.DeletedPropertyIds.Count > 0)
-                {
-                    editor.DeletedPropertyIds.ForEach(id => DeleteItem<LeBlenderPropertyModel>(id));
-                }
-
-                if (editor.OldAlias != null && editor.OldAlias != editor.Alias)
-                {
-                    Helper.UpdateGridNodes(editor.OldAlias, editor.Alias);
-                }
-
-
-                var existingEditor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Alias = @0", editor.Alias);
+                var existingEditor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Guid = @0", editor.Guid);
                 if (existingEditor != null)
                 {
+                    if (existingEditor.Alias != editor.Alias)
+                    {
+                        Helper.UpdateGridNodes(existingEditor.Alias, editor.Alias, "alias");
+                    }
                     existingEditor.Alias = editor.Alias;
                     existingEditor.Name = editor.Name;
                     existingEditor.Render = editor.Render;
@@ -203,13 +178,14 @@ namespace Lecoati.LeBlender.Extension.Helpers
                 }
                 else
                 {
+                    editor.Guid = editor.Guid.Equals(Guid.Empty) ? Guid.NewGuid() : editor.Guid;
                     var LeBlenderGridEditorId = dbContext.Database.Insert("LeBlenderGridEditor", "Id", true, editor);
                     return int.Parse(LeBlenderGridEditorId.ToString());
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.Error<DatabaseHelper>($"Error while trying to update grideditor with alias {editor.OldAlias}", ex);
+                LogHelper.Error<DatabaseHelper>($"Error while trying to update grideditor with Guid {editor.Guid}", ex);
             }
             return 0;
         }
@@ -254,22 +230,28 @@ namespace Lecoati.LeBlender.Extension.Helpers
         internal void InsertOrUpdateProperty(int leBlenderConfigId, List<LeBlenderPropertyModel> properties, int leBlenderGridEditorId)
         {
             var databaseProperties = dbContext.Database.Fetch<LeBlenderPropertyModel>("WHERE LeBlenderConfigId = @0", leBlenderConfigId);
+
+            foreach (var property in databaseProperties)
+            {
+                if (!properties.Any(x => x.Guid == property.Guid))
+                {
+                    DeleteItem<LeBlenderPropertyModel>(property.Id);
+                }
+            }
+
             foreach (var property in properties)
             {
-                var existing = databaseProperties.FirstOrDefault(x => x.Id == property.Id);
+                var existing = databaseProperties.FirstOrDefault(x => x.Guid == property.Guid);
                 if (existing != null)
                 {
-                    if(property.OldAlias != null && property.Alias != property.OldAlias)
+                    var gridEditor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Id = @0", leBlenderGridEditorId);
+                    if (existing.Alias != property.Alias)
                     {
-                        var gridEditor = dbContext.Database.FirstOrDefault<LeBlenderGridEditorModel>("WHERE Id = @0", leBlenderGridEditorId);
-                        if(gridEditor != null)
-                        {
-                            Helper.UpdateGridNodes(property.OldAlias, property.Alias, gridEditor.Alias);
-                        }
-                        else
-                        {
-                            LogHelper.Warn<DatabaseHelper>($"Could not update grid nodes, because GridEditor with Id: {leBlenderGridEditorId} does not exists in the database");
-                        }
+                        Helper.UpdateGridNodes(existing.Alias, property.Alias, "editorAlias", gridEditor.Alias);
+                    }
+                    if (existing.Name != property.Name)
+                    {
+                        Helper.UpdateGridNodes(existing.Name, property.Name, "editorName", gridEditor.Alias);
                     }
 
                     existing.Alias = property.Alias;
@@ -284,6 +266,7 @@ namespace Lecoati.LeBlender.Extension.Helpers
                 {
                     property.LeBlenderConfigId = leBlenderConfigId;
                     property.SortOrder = databaseProperties.Count;
+                    property.Guid = property.Guid.Equals(Guid.Empty) ? Guid.NewGuid() : property.Guid;
                     dbContext.Database.Insert("LeBlenderProperty", "Id", property);
                 }
             }

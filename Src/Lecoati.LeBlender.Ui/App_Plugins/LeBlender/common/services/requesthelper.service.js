@@ -32,30 +32,49 @@
 				return umbRequestHelper.resourcePromise($http.get("/umbraco/backoffice/leblender/Helper/GetEditors"), 'Failed to retrieve datatypes from tree service');
 			},
 
+
+			getCourierRepositories: function () {
+				return umbRequestHelper.resourcePromise($http.get("/umbraco/backoffice/leblender/helper/CourierRepositories"), 'Failed to retrieve datatypes from tree service');
+			},
+
 			/*********************/
 			/*********************/
 			getAllPropertyGridEditors: function () {
 				return umbRequestHelper.resourcePromise($http.get("/umbraco/backoffice/LeBlenderApi/PropertyGridEditor/GetAll"), 'Failed to retrieve datatypes from tree service');
 			},
 
+
 			deleteGridEditor: function (id) {
 				var url = "/umbraco/backoffice/leblender/Helper/DeleteEditor";
 				var data = { id: id };
-				return $http.post(url, data)
-					.then(function successCallback(response) {
-					}, function errorCallback(reponse) {
-						console.error(response.data.Message);
-					});
+				return $http.post(url, data, {
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+					transformRequest: function (result) {
+						return $.param(result);
+					}
+				});
 			},
 
 			updateGridSortOrder: function (items) {
 				var url = "/umbraco/backoffice/leblender/Helper/UpdateGridSortOrder";
 				var data = { items: items };
-				return $http.post(url, data)
-					.then(function successCallback(response) {
-					}, function errorCallback(reponse) {
-						console.error(response.data.Message);
-					});
+				return $http.post(url, data, {
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+					transformRequest: function (result) {
+						return $.param(result);
+					}
+				});
+			},
+
+			deleteAllEditors: function (editors) {
+				var url = "/umbraco/backoffice/leblender/Helper/DeleteAllEditors";
+				var data = { editors: JSON.stringify(editors, null, 4) };
+				return $http.post(url, data, {
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+					transformRequest: function (result) {
+						return $.param(result);
+					}
+				});
 			},
 
 			/*********************/
@@ -82,8 +101,25 @@
 					editor: JSON.stringify(editor, null, 4)
 				};
 
-				return $http.post(url, data).then(function (response) {
-					return response;
+				return $http.post(url, data, {
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+					transformRequest: function (result) {
+						return $.param(result);
+					}
+				});
+			},
+
+			transferAllEditors: function (editors, remoteUrl) {
+				var url = remoteUrl + "/umbraco/api/Transfer/TransferAllEditors";
+				var data = {
+					editors: JSON.stringify(editors, null, 4)
+				};
+
+				return $http.post(url, data, {
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+					transformRequest: function (result) {
+						return $.param(result);
+					}
 				});
 			},
 

@@ -28,8 +28,8 @@ namespace Lecoati.LeBlender.Extension.Events
             );
             RouteTable.Routes.MapRoute(
               name: "Transfer",
-              url: "umbraco/api/Transfer/TransferEditor",
-              defaults: new { controller = "Transfer", action = "TransferEditor" }
+              url: "umbraco/api/Transfer/{action}",
+              defaults: new { controller = "Transfer" }
             );
         }
 
@@ -54,16 +54,20 @@ namespace Lecoati.LeBlender.Extension.Events
                             .Replace("/App_Plugins/Lecoati.LeBlender/editors/leblendereditor/views/Base.cshtml", "/App_Plugins/LeBlender/editors/leblendereditor/views/Base.cshtml");
                         System.IO.File.WriteAllText(gridConfig, readText);
                     }
-
-                    var databaseHelper = new DatabaseHelper();
-                    //Transfer grid.config items to database
-                    databaseHelper.CreateOrUpdateTables();
                 }
                 catch (Exception ex)
                 {
                     LogHelper.Error<Helper>("Enable to upgrate LeBlender 1.0.0", ex);
                 }
             }
+
+            var databaseHelper = new DatabaseHelper();
+            if (databaseHelper.CreateTables())
+            {
+                //Transfer grid.editor.config items to database
+                databaseHelper.ImportGridEditorConfig();
+            }
+            
         }
     }
 }

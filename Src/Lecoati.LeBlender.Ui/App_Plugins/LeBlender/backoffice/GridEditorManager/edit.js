@@ -89,10 +89,6 @@
 		// save editor values
 		$scope.save = function () {
 
-			if ($routeParams.id != -1 && $routeParams.id != $scope.model.value.alias) {
-				$scope.model.value.oldAlias = $routeParams.id;
-			}
-
 			if ($routeParams.id == -1) {
 				$scope.model.value.sortOrder = $scope.editors.indexOf($scope.model.value);
 				if ($scope.model.value.config.editors.length > 1) {

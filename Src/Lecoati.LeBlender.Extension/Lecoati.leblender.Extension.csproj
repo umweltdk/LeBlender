@@ -301,7 +301,7 @@
   <ItemGroup>
     <Compile Include="Controllers\LeBlenderController.cs" />
     <Compile Include="Controllers\LeBlenderEditorManagerTreeController.cs" />
-    <Compile Include="Controllers\TransferApiController.cs" />
+    <Compile Include="Controllers\TransferController.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Helpers\RuntimeCacheHelper.cs" />
     <Compile Include="Models\LeBlenderPropertyModel.cs" />

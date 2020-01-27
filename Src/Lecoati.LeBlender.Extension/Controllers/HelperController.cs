@@ -45,6 +45,34 @@ namespace Lecoati.LeBlender.Extension.Controllers
             return Content(message);
         }
 
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult DeleteAllEditors(string editors)
+        {
+            try
+            {
+                var gridEditors = JsonConvert.DeserializeObject<List<LeBlenderGridEditorModel>>(editors);
+                if(gridEditors != null && gridEditors.Any())
+                {
+                    var dbHelper = new DatabaseHelper();
+                    foreach(var gridEditor in gridEditors)
+                    {
+                        dbHelper.DelteGridEditor(gridEditor.Id);
+                    }
+                    var updatedEditors = dbHelper.GetEditors();
+                    RuntimeCacheHelper.SetCacheItem("LeBlenderEditors", updatedEditors, 1);
+                }
+                return Content("Deleted all editors from database");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<HelperController>($"Error while trying to perform action: Delete All Editors", ex);
+                return Content($"Error while trying to delete all editors. Error: {ex.Message}");
+            }
+        }
+
+
         [HttpPost]
         public ActionResult UpdateGridSortOrder(Dictionary<int, int> items)
         {
@@ -131,78 +159,5 @@ namespace Lecoati.LeBlender.Extension.Controllers
             }
             return Content("Could not get configFile");
         }
-
-
-        /// TRANSFER
-        /// 
-
-        //[HttpPost]
-        //// /umbraco/backoffice/leblender/transfer
-        //public string Transfer(string alias, string remoteUrl)
-        //{
-        //    var message = "";
-        //    try
-        //    {
-        //        var dbHelper = new DatabaseHelper();
-        //        var editor = dbHelper.GetGridEditor(alias);
-
-        //        if (editor != null)
-        //        {
-        //            var task = Task.Run(async () => await SendEditor(JsonConvert.SerializeObject(editor), remoteUrl));
-        //            if (task.Wait(90))
-        //            {
-        //                var result = task.Result;
-        //                message = result;
-        //            }
-        //            else
-        //            {
-        //                message = $"Timeout while trying to reach endpoint: {remoteUrl}";
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        message = $"Error while trying to courier gridEditor with Alias: {alias} to remote url: {remoteUrl}";
-        //        LogHelper.Error<HelperController>(message, ex);
-        //    }
-        //    return JsonConvert.SerializeObject(new { message });
-        //}
-
-        [HttpPost]
-        // /Umbraco/Api/LeBlenderTranfer/RecieveEditor
-        public string RecieveEditor(string editor, bool check)
-        {
-            var message = "Remote DB has been updated";
-            try
-            {
-                var gridEditor = JsonConvert.DeserializeObject<LeBlenderGridEditorModel>(editor);
-                if (gridEditor != null)
-                {
-                    var dbHelper = new DatabaseHelper();
-                    var gridEditorId = dbHelper.InsertOrUpdateGridEditor(gridEditor);
-                    if (gridEditor.Config.Count > 0)
-                    {
-                        dbHelper.InsertOrUpdateConfig(gridEditorId, gridEditor.Config);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                message = $"Error while receiving editor for database storage. Message: {ex.Message}";
-                LogHelper.Error<HelperController>(message, ex);
-            }
-            return JsonConvert.SerializeObject(new { message });
-        }
-
-        //private async Task<string> SendEditor(string editorJson, string remoteUrl)
-        //{
-        //    var endPoint = $"{remoteUrl}/umbraco/backoffice/leblender/RecieveEditor";
-        //    var client = new HttpClient();
-        //    var result = await client.PostAsJsonAsync(endPoint, editorJson);
-        //    var response = await result.Content.ReadAsStringAsync();
-        //    return response;
-        //}
-
     }
-
 }

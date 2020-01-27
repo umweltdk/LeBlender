@@ -27,9 +27,7 @@
 		}
 
 		// remove a property
-		$scope.remove = function ($index, id) {
-			// Add Id to deletedPropertyIds for deletion in database
-			$scope.model.parentValue.deletedPropertyIds.push(id);
+		$scope.remove = function ($index) {
 			$scope.model.value.splice($index, 1);
 		}
 

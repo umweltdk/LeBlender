@@ -121,7 +121,7 @@
     "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/edit.js",
     "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/delete.js",
     "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/sort.js",
-    "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/leBlenderCourier.js",
+    "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/transferEditor.js",
 
     "~/App_Plugins/LeBlender/editors/leblendereditor/inline-grid.directive.js",
     "~/App_Plugins/LeBlender/editors/leblendereditor/leblenderproperties.controller.js",

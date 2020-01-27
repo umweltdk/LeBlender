@@ -22,8 +22,8 @@ namespace Lecoati.LeBlender.Extension.Controllers
 
             var leBlenderCourierItem = new MenuItem
             {
-                Alias = "leBlenderCourier",
-                Name = "LeBlender Courier",
+                Alias = "transferEditor",
+                Name = "Transfer Editors",
                 Icon = "umb-deploy"
             };
 
@@ -34,13 +34,25 @@ namespace Lecoati.LeBlender.Extension.Controllers
                 var createText = textService.Localize($"actions/{ActionNew.Instance.Alias}");
                 var sortText = textService.Localize($"actions/{ActionSort.Instance.Alias}");
                 var refreshNodeText = textService.Localize($"actions/{ActionRefresh.Instance.Alias}");
+                var deleteAll = new MenuItem
+                {
+                    Alias = "delete",
+                    Name = "Delete All Editors",
+                    Icon = "delete"
+                };
+
+                deleteAll.AdditionalData.Add("DeleteAll", true);
 
                 // root actions              
+                leBlenderCourierItem.AdditionalData.Add("TransferAll", true);
+                menu.Items.Add(leBlenderCourierItem);
                 menu.Items.Add<CreateChildEntity, ActionNew>(createText);
                 menu.Items.Add<ActionSort>(sortText);
                 menu.Items.Add<RefreshNode, ActionRefresh>(refreshNodeText, true);
+                menu.Items.Add(deleteAll);
                 return menu;
             }
+            leBlenderCourierItem.Name = "Transfer Editor";
             menu.Items.Add(leBlenderCourierItem);
             menu.Items.Add<ActionDelete>(deleteText);
             return menu;

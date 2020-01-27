@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
@@ -20,6 +21,11 @@ namespace Lecoati.LeBlender.Extension.Models
         [JsonProperty("id")]
         public int Id { get; set; }
 
+        [Index(IndexTypes.UniqueNonClustered)]
+        [Column("Guid")]
+        [JsonProperty("guid")]
+        public Guid Guid { get; set; }
+
 
         [Column("Name")]
         [JsonProperty("name", Required = Required.Always)]
@@ -28,10 +34,6 @@ namespace Lecoati.LeBlender.Extension.Models
         [Column("Alias")]
         [JsonProperty("alias", Required = Required.Always)]
         public string Alias { get; set; }
-
-        [ResultColumn]
-        [JsonProperty("oldAlias")]
-        public string OldAlias { get; set; }
 
         [Column("View")]
         [JsonProperty("view", Required = Required.Always)]
@@ -53,10 +55,6 @@ namespace Lecoati.LeBlender.Extension.Models
         [ResultColumn]
         [JsonProperty("config")]
         public IDictionary<string, object> Config { get; set; }
-                
-        [ResultColumn]
-        [JsonProperty("deletedPropertyIds")]
-        public List<int> DeletedPropertyIds { get; set; } = new List<int>();
 
         protected bool Equals(LeBlenderGridEditorModel other)
         {

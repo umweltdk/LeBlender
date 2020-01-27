@@ -146,7 +146,7 @@ namespace Lecoati.LeBlender.Extension
         /// </summary>
         /// <param name="model"></param>
         /// <returns>string responseMessage</returns>
-        internal static void UpdateGridNodes(string oldAlias, string alias, string gridEditorAlias = null)
+        internal static void UpdateGridNodes(string oldValue, string newValue, string fieldName, string gridEditorAlias = null)
         {
             try
             {
@@ -180,12 +180,12 @@ namespace Lecoati.LeBlender.Extension
                                         var values = jsonObject.SelectTokens($"sections[*].rows[*].areas[*].controls[?(@.editor.alias == '{gridEditorAlias}')]");
                                         foreach(var item in values)
                                         {
-                                            UpdateGridEditorAlias(item, oldAlias, alias, true);
+                                            UpdateGridEditorValue(item, oldValue, newValue, fieldName);
                                         }
                                     }
                                     else
                                     {
-                                        UpdateGridEditorAlias(jsonObject, oldAlias, alias);
+                                        UpdateGridEditorValue(jsonObject, oldValue, newValue, fieldName);
                                     }
 
                                     node.SetValue(gridProperty.Alias, jsonObject.ToString());
@@ -205,7 +205,7 @@ namespace Lecoati.LeBlender.Extension
             }
             catch (Exception ex)
             {
-                LogHelper.Error<Helper>($"Could not update Editor Alias. Old alias: {oldAlias}. New alias: {alias}", ex);
+                LogHelper.Error<Helper>($"Could not update Editor Alias. Old alias: {oldValue}. New alias: {newValue}", ex);
             }
         }
 
@@ -366,31 +366,24 @@ namespace Lecoati.LeBlender.Extension
         /// <param name="token"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        private static bool UpdateGridEditorAlias(JToken token, string oldAlias, string alias, bool isProperty = false)
+        private static bool UpdateGridEditorValue(JToken token, string oldValue, string newValue, string fieldName)
         {
             if (token.HasValues)
             {
                 foreach (JToken child in token.Children())
                 {
-                    UpdateGridEditorAlias(child, oldAlias, alias, isProperty);
+                    UpdateGridEditorValue(child, oldValue, newValue, fieldName);
                 }
                 // we are done parsing and this is a parent node
                 return true;
             }
 
             var name = ((JProperty)token.Parent).Name;
-            if(isProperty && name == "editorAlias")
+            if (name == fieldName)
             {
-                if (((JProperty)token.Parent).Value.ToString() == oldAlias)
+                if (((JProperty)token.Parent).Value.ToString() == oldValue)
                 {
-                    ((JProperty)token.Parent).Value = alias;
-                }
-            }
-            if (name == "alias")
-            {
-                if (((JProperty)token.Parent).Value.ToString() == oldAlias)
-                {
-                    ((JProperty)token.Parent).Value = alias;
+                    ((JProperty)token.Parent).Value = newValue;
                 }
             }
             return false;
