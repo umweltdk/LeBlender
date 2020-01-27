@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Xml.Linq;
 using Umbraco.Core.Logging;
@@ -14,7 +12,6 @@ using Umbraco.Web.Mvc;
 
 namespace Lecoati.LeBlender.Extension.Controllers
 {
-
     public class HelperController : UmbracoAuthorizedController
     {
         [ValidateInput(false)]
@@ -148,6 +145,7 @@ namespace Lecoati.LeBlender.Extension.Controllers
         [ValidateInput(false)]
         public ActionResult GetTransferUrls()
         {
+            var urls = new List<string>();
             // Check if there is a courier.config containing any remote urls
             var configFile = HttpContext.Server.MapPath("~/config/courier.config");
             if (System.IO.File.Exists(configFile))
@@ -156,19 +154,19 @@ namespace Lecoati.LeBlender.Extension.Controllers
                 var repos = doc.Root.Element("repositories").Descendants("repository").Descendants("url").Select(x => x.Value).ToList();
                 if (repos.Any())
                 {
-                    return Content(JsonConvert.SerializeObject(repos));
+                    urls.AddRange(repos);
                 }
             }
             // Check if there are any remote urls in web.config
-            else if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("LeBlender:TransferUrls")))
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("LeBlender:TransferUrls")))
             {
-                var urls = ConfigurationManager.AppSettings.Get("LeBlender.TransferUrls").Split(',');
-                if (urls.Any())
+                var configUrls = ConfigurationManager.AppSettings.Get("LeBlender:TransferUrls").Split(',');
+                if (configUrls.Any())
                 {
-                    return Content(JsonConvert.SerializeObject(urls));
+                    urls.AddRange(configUrls);
                 }
             }
-            return Content("Could not get any valid transfer urls. Please add urls to courier.config or web.config");
+            return Content(JsonConvert.SerializeObject(urls.Distinct()));
         }
     }
 }

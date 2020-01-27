@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net.Http;
 using System.Web.Mvc;
 using Umbraco.Core.Logging;
 
@@ -116,6 +115,5 @@ namespace Lecoati.LeBlender.Extension.Controllers
             var allowedDomains = ConfigurationManager.AppSettings.Get("LeBlender:AllowedDomains").Split(',');
             return allowedDomains.Any(allowedUrl => url.Host.EndsWith(allowedUrl));
         }
-
     }
 }

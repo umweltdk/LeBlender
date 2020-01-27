@@ -15,6 +15,7 @@
 		};
 
 		function setMessage(response) {
+			console.log('SETMSG', response);
 			$scope.transfer.message = response.data;
 			if (response.status !== 200) {
 				$scope.transfer.textColor = "red";
@@ -29,6 +30,7 @@
 		}
 
 		function init() {
+			$scope.transferUrls = [];
 			$scope.transferAll = $scope.dialogOptions.currentAction.metaData.TransferAll || false;
 			$scope.transferring = false;
 			$scope.transferDone = false;
@@ -38,7 +40,6 @@
 			};
 
 			LeBlenderRequestHelper.getGridEditors().then(function (response) {
-				$scope.transferUrls = [];
 				$scope.editors = response;
 				$scope.model = {
 					value: {
@@ -65,12 +66,10 @@
 			// Get Repositories
 			LeBlenderRequestHelper.getTransferUrls().then(function (response) {
 				var currentUrl = $location.protocol() + '://' + $location.host();
-				if (response) {
-					if (response.length > 0) {
-						for (var i = 0; i < response.length; i++) {
-							if (response[i] !== currentUrl) {
-								$scope.transferUrls.push(response[i]);
-							}
+				if (response.length > 0) {
+					for (var i = 0; i < response.length; i++) {
+						if (response[i] !== currentUrl) {
+							$scope.transferUrls.push(response[i]);
 						}
 					}
 				}

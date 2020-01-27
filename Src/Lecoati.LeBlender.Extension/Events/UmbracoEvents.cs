@@ -1,13 +1,10 @@
-﻿//clear cache on publish
-using System;
+﻿using System;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
-using Umbraco.Core.Publishing;
 using System.Web;
 using Lecoati.LeBlender.Extension.Helpers;
-using System.Web.Http;
 
 namespace Lecoati.LeBlender.Extension.Events
 {
