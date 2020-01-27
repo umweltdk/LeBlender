@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Umbraco.Core;
-using Umbraco.Core.Logging;
 
 namespace Lecoati.LeBlender.Extension.Helpers
 {
@@ -14,7 +10,6 @@ namespace Lecoati.LeBlender.Extension.Helpers
             var cachedItem = ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(cacheKey);
             return (T)cachedItem;
         }
-
         public static void SetCacheItem<T>(string cacheKey, T item, int days)
         {
             DeleteCacheItem(cacheKey);

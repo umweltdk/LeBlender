@@ -1,8 +1,5 @@
 ﻿angular.module("umbraco").controller("leblender.editormanager.transferEditor",
-	function ($scope, assetsService, $http, $timeout, $location, LeBlenderRequestHelper, dialogService, $routeParams, navigationService, treeService) {
-
-
-
+	function ($scope, $timeout, $location, LeBlenderRequestHelper, navigationService) {
 		$scope.transferEditor = function (remoteUrl) {
 			$scope.transferring = true;
 
@@ -18,7 +15,6 @@
 		};
 
 		function setMessage(response) {
-
 			$scope.transfer.message = response.data;
 			if (response.status !== 200) {
 				$scope.transfer.textColor = "red";
@@ -33,9 +29,7 @@
 		}
 
 		function init() {
-
 			$scope.transferAll = $scope.dialogOptions.currentAction.metaData.TransferAll || false;
-
 			$scope.transferring = false;
 			$scope.transferDone = false;
 			$scope.transfer = {
@@ -43,12 +37,9 @@
 				textColor: "green"
 			};
 
-
 			LeBlenderRequestHelper.getGridEditors().then(function (response) {
-				// init model
+				$scope.transferUrls = [];
 				$scope.editors = response;
-
-				// Init model value
 				$scope.model = {
 					value: {
 						name: "",
@@ -69,27 +60,24 @@
 						});
 					}
 				});
-
 			});
 
-			$scope.courierUrls = [];
-
-			LeBlenderRequestHelper.getCourierRepositories().then(function (response) {
+			// Get Repositories
+			LeBlenderRequestHelper.getTransferUrls().then(function (response) {
 				var currentUrl = $location.protocol() + '://' + $location.host();
 				if (response) {
 					if (response.length > 0) {
 						for (var i = 0; i < response.length; i++) {
 							if (response[i] !== currentUrl) {
-								$scope.courierUrls.push(response[i]);
+								$scope.transferUrls.push(response[i]);
 							}
 						}
 					}
 				}
 			});
-
 		}
 
-		$scope.cancelCourier = function () {
+		$scope.cancelTransfer = function () {
 			navigationService.hideNavigation();
 		};
 

@@ -3,13 +3,13 @@
         <div ng-hide="transferring || transferDone">
             <p>Please select destination:</p>
             <select style="width:auto;" ng-model="remoteUrl">
-                <option ng-repeat="url in courierUrls" value="{{url}}">
+                <option ng-repeat="url in transferUrls" value="{{url}}">
                     {{url}}
                 </option>
             </select>
             <div class="umb-pane btn-toolbar umb-btn-toolbar">
                 <div class="control-group umb-control-group">
-                    <a href="" class="btn btn-link" ng-click="cancelCourier()">
+                    <a href="" class="btn btn-link" ng-click="cancelTransfer()">
                         <localize key="general_cancel">Cancel</localize>
                     </a>
                     <a href="" ng-disabled="remoteUrl == null" class="btn btn-primary" ng-click="remoteUrl == null || transferEditor(remoteUrl)">

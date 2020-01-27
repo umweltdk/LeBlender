@@ -42,7 +42,6 @@
 					$scope.dialogData.parameter.dataType = "";
 					break;
 			}
-
 		}
 
 		/***************************************/
@@ -97,7 +96,6 @@
 					delete $scope.model.value.propretyType.config;
 				};
 			});
-
 		};
 
 		// Save current property
@@ -120,7 +118,6 @@
 			else {
 				$scope.close();
 			}
-
 		}
 
 		/***************************************/
@@ -195,7 +192,4 @@
 
 		$scope.init();
 		$scope.initAutoPopulateAlias();
-
-
-
 	});

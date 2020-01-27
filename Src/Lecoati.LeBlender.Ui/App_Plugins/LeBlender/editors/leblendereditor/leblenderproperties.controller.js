@@ -1,8 +1,5 @@
 ﻿angular.module("umbraco").controller("leblenderproperties.controller",
 	function ($scope, $rootScope, assetsService, $http, LeBlenderRequestHelper, dialogService) {
-
-
-
 		// Inir render with the value of frontView
 		// render have to be always = /App_Plugins/LeBlender/editors/leblendereditor/views/Base.cshtml
 		$scope.model.parentValue.render = $scope.model.parentValue.config.frontView ? $scope.model.parentValue.config.frontView : "";
@@ -41,5 +38,4 @@
 		LeBlenderRequestHelper.getAllDataTypes().then(function (data) {
 			$scope.availableDataTypes = data;
 		});
-
 	});

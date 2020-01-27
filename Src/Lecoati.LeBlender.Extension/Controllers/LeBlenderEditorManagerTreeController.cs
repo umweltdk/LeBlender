@@ -14,7 +14,6 @@ namespace Lecoati.LeBlender.Extension.Controllers
     [Umbraco.Web.Trees.Tree("developer", "GridEditorManager", "Grid Editors", iconClosed: "icon-doc")]
     public class LeBlenderEditorManagerTreeController : TreeController
     {
-
         protected override Umbraco.Web.Models.Trees.MenuItemCollection GetMenuForNode(string id, System.Net.Http.Formatting.FormDataCollection queryStrings)
         {
             var textService = ApplicationContext.Services.TextService;
@@ -26,7 +25,6 @@ namespace Lecoati.LeBlender.Extension.Controllers
                 Name = "Transfer Editors",
                 Icon = "umb-deploy"
             };
-
 
             var menu = new MenuItemCollection();
             if (id == Constants.System.Root.ToInvariantString())
@@ -60,7 +58,6 @@ namespace Lecoati.LeBlender.Extension.Controllers
 
         protected override Umbraco.Web.Models.Trees.TreeNodeCollection GetTreeNodes(string id, System.Net.Http.Formatting.FormDataCollection queryStrings)
         {
-
             var nodes = new TreeNodeCollection();
             if (id == "-1")
             {
@@ -76,7 +73,6 @@ namespace Lecoati.LeBlender.Extension.Controllers
             }
 
             return nodes;
-            
         }
     }
 }

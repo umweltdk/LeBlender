@@ -18,5 +18,6 @@
 	<files>
 		<file src="..\src\Lecoati.LeBlender.Ui\App_Plugins\LeBlender\**\*.*" target="Content\App_Plugins\LeBlender" />
 		<file src="..\src\Lecoati.LeBlender.Extension\bin\Lecoati.LeBlender.Extension.dll" target="lib\Lecoati.LeBlender.Extension.dll" />
+        <file src="..\webconfig\*.*" target="Content" />
 	</files>
 </package>

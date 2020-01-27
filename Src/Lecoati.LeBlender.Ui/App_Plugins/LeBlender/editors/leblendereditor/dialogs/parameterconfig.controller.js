@@ -254,7 +254,6 @@
 		}
 
 		$scope.updateTemplate = function () {
-
 			// Clean for fixed config
 			if ($scope.model.value.length < $scope.config.min) {
 				while ($scope.model.value.length < $scope.config.min) {
@@ -269,7 +268,6 @@
 			if ($scope.config.max == $scope.config.min) {
 				$scope.fixed = true;
 			}
-
 		}
 
 		$scope.updateTemplate();
@@ -303,5 +301,4 @@
 
 		// Load css asset
 		assetsService.loadCss("/App_Plugins/LeBlender/editors/leblendereditor/assets/parameterconfig.css");
-
 	});

@@ -1,7 +1,7 @@
 <div class="umb-panel" ng-controller="leblender.editormanager.delete">
     <div class="umb-panel-body" style="padding:0 2rem;">
-        <p>Are you sure you want to delete {{deleteText}}</p>
-        <div>
+        <div ng-hide="deleting || deletionDone">
+            <p>Are you sure you want to delete {{deleteText}}</p>
             <div class="umb-pane btn-toolbar umb-btn-toolbar">
                 <div class="control-group umb-control-group">
                     <a href="" class="btn btn-link" ng-click="cancelDelete()">
@@ -12,6 +12,16 @@
                     </a>
                 </div>
             </div>
+        </div>
+        <div ng-show="deletionDone">
+            <span ng-style="{'color':deletion.textColor}">{{deletion.message}}</span>
+        </div>
+        <div ng-show="deleting">
+            <ul class="umb-load-indicator animated -half-second">
+                <li class="umb-load-indicator__bubble"></li>
+                <li class="umb-load-indicator__bubble"></li>
+                <li class="umb-load-indicator__bubble"></li>
+            </ul>
         </div>
     </div>
 </div>

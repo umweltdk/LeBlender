@@ -17,7 +17,6 @@ namespace Lecoati.LeBlender.Extension.Events
         protected override void ApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
             base.ApplicationInitialized(umbracoApplication, applicationContext);
-
             RouteTable.Routes.MapRoute(
                 "leblender",
                 "umbraco/backoffice/leblender/helper/{action}",
@@ -37,7 +36,8 @@ namespace Lecoati.LeBlender.Extension.Events
         {
             // Upgrate default view path for LeBlender 1.0.0
             var gridConfig = HttpContext.Current.Server.MapPath("~/Config/grid.editors.config.js");
-            if (System.IO.File.Exists(gridConfig))
+            var gridConfigExists = System.IO.File.Exists(gridConfig);
+            if (gridConfigExists)
             {
                 try
                 {
@@ -62,12 +62,11 @@ namespace Lecoati.LeBlender.Extension.Events
             }
 
             var databaseHelper = new DatabaseHelper();
-            if (databaseHelper.CreateTables())
+            if (databaseHelper.CreateTables() && gridConfigExists)
             {
                 //Transfer grid.editor.config items to database
                 databaseHelper.ImportGridEditorConfig();
             }
-            
         }
     }
 }

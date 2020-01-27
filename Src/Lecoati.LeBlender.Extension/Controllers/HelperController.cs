@@ -3,6 +3,7 @@ using Lecoati.LeBlender.Extension.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Lecoati.LeBlender.Extension.Controllers
         [HttpPost]
         public ActionResult DeleteEditor(int id)
         {
-            var message = $"Deleted GridEditor with Id: {id} from the database";
+            var message = $"Successfully deleted editor from the database";
             try
             {
                 var dbHelper = new DatabaseHelper();
@@ -40,7 +41,7 @@ namespace Lecoati.LeBlender.Extension.Controllers
             catch (Exception ex)
             {
                 message = $"Error while trying to delete GridEditor with id: {id} from the database";
-                LogHelper.Error<HelperController>($"Error while trying to delete GridEditor with id: {id} from the database", ex);
+                LogHelper.Error<HelperController>($"Error while trying to delete editor with id: {id} from the database", ex);
             }
             return Content(message);
         }
@@ -101,20 +102,20 @@ namespace Lecoati.LeBlender.Extension.Controllers
             return Json(new { Message = message });
         }
 
-        [ValidateInput(false)]
         [HttpPost]
-        public ActionResult UpdateEditor()
+        [ValidateInput(false)]
+        public ActionResult UpdateEditor(string editor)
         {
-            var message = "Saved";
+            var message = "Grid editor has been saved";
             try
             {
-                var editor = JsonConvert.DeserializeObject<LeBlenderGridEditorModel>(Request["editor"]);
+                var gridEditor = JsonConvert.DeserializeObject<LeBlenderGridEditorModel>(editor);
                 var dbHelper = new DatabaseHelper();
-                var LeBlenderGridEditorId = dbHelper.InsertOrUpdateGridEditor(editor);
+                var LeBlenderGridEditorId = dbHelper.InsertOrUpdateGridEditor(gridEditor);
 
-                if (editor.Config.Count > 0)
+                if (gridEditor.Config.Count > 0)
                 {
-                    dbHelper.InsertOrUpdateConfig(LeBlenderGridEditorId, editor.Config);
+                    dbHelper.InsertOrUpdateConfig(LeBlenderGridEditorId, gridEditor.Config);
                 }
 
                 // Update runtimecache
@@ -145,8 +146,9 @@ namespace Lecoati.LeBlender.Extension.Controllers
 
         [HttpGet]
         [ValidateInput(false)]
-        public ActionResult CourierRepositories()
+        public ActionResult GetTransferUrls()
         {
+            // Check if there is a courier.config containing any remote urls
             var configFile = HttpContext.Server.MapPath("~/config/courier.config");
             if (System.IO.File.Exists(configFile))
             {
@@ -157,7 +159,16 @@ namespace Lecoati.LeBlender.Extension.Controllers
                     return Content(JsonConvert.SerializeObject(repos));
                 }
             }
-            return Content("Could not get configFile");
+            // Check if there are any remote urls in web.config
+            else if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("LeBlender:TransferUrls")))
+            {
+                var urls = ConfigurationManager.AppSettings.Get("LeBlender.TransferUrls").Split(',');
+                if (urls.Any())
+                {
+                    return Content(JsonConvert.SerializeObject(urls));
+                }
+            }
+            return Content("Could not get any valid transfer urls. Please add urls to courier.config or web.config");
         }
     }
 }

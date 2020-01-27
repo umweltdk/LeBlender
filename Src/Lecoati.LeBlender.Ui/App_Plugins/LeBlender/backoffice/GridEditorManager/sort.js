@@ -2,7 +2,6 @@
 	function ($scope, assetsService, $http, LeBlenderRequestHelper, dialogService, $routeParams, navigationService, treeService) {
 
 		$scope.save = function () {
-
 			var sortItems = [];
 
 			for (var i = 0; i < $scope.editors.length; i++) {
@@ -25,5 +24,4 @@
 		LeBlenderRequestHelper.getGridEditors().then(function (response) {
 			$scope.editors = response
 		});
-
 	});

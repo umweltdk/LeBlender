@@ -3,6 +3,7 @@ using Lecoati.LeBlender.Extension.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Mvc;
@@ -16,7 +17,7 @@ namespace Lecoati.LeBlender.Extension.Controllers
         [HttpPost]
         public ActionResult TransferEditor(string editor)
         {
-            if (Request.Url.Host.EndsWith(".umw.dk"))
+            if (IsValidDomain(Request.Url))
             {
                 Response.Headers.Remove("Access-Control-Allow-Origin");
                 Response.AddHeader("Access-Control-Allow-Origin", Request.UrlReferrer.GetLeftPart(UriPartial.Authority));
@@ -63,7 +64,8 @@ namespace Lecoati.LeBlender.Extension.Controllers
         [HttpPost]
         public ActionResult TransferAllEditors(string editors)
         {
-            if (Request.Url.Host.EndsWith(".umw.dk"))
+            
+            if (IsValidDomain(Request.Url))
             {
                 Response.Headers.Remove("Access-Control-Allow-Origin");
                 Response.AddHeader("Access-Control-Allow-Origin", Request.UrlReferrer.GetLeftPart(UriPartial.Authority));
@@ -108,5 +110,12 @@ namespace Lecoati.LeBlender.Extension.Controllers
             }
             return Content(message);
         }
+
+        private bool IsValidDomain(Uri url)
+        {
+            var allowedDomains = ConfigurationManager.AppSettings.Get("LeBlender:AllowedDomains").Split(',');
+            return allowedDomains.Any(allowedUrl => url.Host.EndsWith(allowedUrl));
+        }
+
     }
 }

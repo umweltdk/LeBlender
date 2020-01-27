@@ -1,5 +1,5 @@
 ﻿angular.module("umbraco").controller("leblender.editormanager.edit",
-	function ($scope, assetsService, $http, LeBlenderRequestHelper, dialogService, $routeParams, notificationsService, navigationService, contentEditingHelper, editorState) {
+	function ($scope, LeBlenderRequestHelper, dialogService, $routeParams, notificationsService, navigationService, contentEditingHelper) {
 
 
 		/***************************************/
@@ -26,7 +26,6 @@
 					}
 				}
 			}
-
 		}
 
 
@@ -88,15 +87,12 @@
 
 		// save editor values
 		$scope.save = function () {
-
 			if ($routeParams.id == -1) {
 				$scope.model.value.sortOrder = $scope.editors.indexOf($scope.model.value);
 				if ($scope.model.value.config.editors.length > 1) {
 					$scope.model.value.config.editors.forEach(x => x.sortOrder = $scope.model.value.config.editors.indexOf(x));
 				}
 			}
-
-
 
 			var submitPlease = true;
 			if ($scope.model.value) {
@@ -124,12 +120,10 @@
 					contentEditingHelper.redirectToCreatedContent($scope.model.value.alias, true);
 				}
 			});
-
 		}
 
 		// get config value
 		$scope.getConfigAsText = function () {
-
 			$scope.textAreaconfig = "";
 
 			if ($scope.model.value.config) {
@@ -154,14 +148,9 @@
 			});
 		}
 
-
-
 		/***************************************/
 		/* property grid editor */
 		/***************************************/
-
-		//// init pge
-		//$scope.propertyGridEditors = $scope.dialogData.propertyGridEditors;
 
 		// search a pge by view
 		$scope.searchPropertyGridEditor = function (view) {

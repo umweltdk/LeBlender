@@ -1,12 +1,10 @@
 <div class="list-editor list-editor-{{control.editor.alias}}" ng-controller="LeBlenderEditor.controller">
     <div ng-if="preview" ng-bind-html-unsafe="preview" ng-click="openListParameter()"></div>
-
     <div class="usky-editor-placeholder preview-LeBlender" ng-hide="preview">
         <i class="icon {{control.editor.icon}}" ng-click="openListParameter()"></i>
         <div class="help-text ng-binding">{{ control.editor.name }}</div>
     </div>
 </div>
-
 <div>
     <inline-grid ng-if="control.value && control.value.length === 1" style="cursor: default; pointer-events: all"
         name="control.editor.name" value="control.value" config="control.editor.config"></inline-grid>
