@@ -12,7 +12,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web;
-using Umbraco.Web.Editors;
 
 namespace Lecoati.LeBlender.Extension
 {
@@ -72,11 +71,12 @@ namespace Lecoati.LeBlender.Extension
         /// </summary>
         /// <param name="LeBlenderEditorAlias"></param>
         /// <returns></returns>
-        public static int GetCacheExpiration(String LeBlenderEditorAlias) { 
+        public static int GetCacheExpiration(String LeBlenderEditorAlias)
+        {
 
             var result = 0;
 
-            try 
+            try
             {
                 var editor = GetLeBlenderGridEditors(true).FirstOrDefault(r => r.Alias == LeBlenderEditorAlias);
                 if (editor.Config.ContainsKey("expiration") && editor.Config["expiration"] != null)
@@ -93,49 +93,51 @@ namespace Lecoati.LeBlender.Extension
 
         }
 
+
+        private static List<LeBlenderGridEditorModel> GetEditorsFromConfig(bool onlyLeBlenderEditor)
+        {
+            var editors = new List<LeBlenderGridEditorModel>();
+            var gridConfig = HttpContext.Current.Server.MapPath("~/Config/grid.editors.config.js");
+            if (System.IO.File.Exists(gridConfig))
+            {
+                try
+                {
+                    var arr = JArray.Parse(System.IO.File.ReadAllText(gridConfig));
+                    var parsed = JsonConvert.DeserializeObject<IEnumerable<LeBlenderGridEditorModel>>(arr.ToString()); ;
+                    editors.AddRange(parsed);
+
+                    if (onlyLeBlenderEditor)
+                    {
+                        editors = editors.Where(r => r.View.Equals("/App_Plugins/LeBlender/core/LeBlendereditor.html", StringComparison.InvariantCultureIgnoreCase) ||
+                            r.View.Equals("/App_Plugins/LeBlender/editors/leblendereditor/LeBlendereditor.html", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error<Helper>("Could not parse the contents of grid.editors.config.js into a JSON array", ex);
+                }
+            }
+            return editors;
+        }
         #region internal
 
         /// <summary>
         /// Get and cache LeBlender Grid Editor 
         /// </summary>
         /// <returns></returns>
-        internal static IEnumerable<GridEditor> GetLeBlenderGridEditors(bool onlyLeBlenderEditor) 
+        internal static List<LeBlenderGridEditorModel> GetLeBlenderGridEditors(bool onlyLeBlenderEditor)
         {
-            
-            Func<List<GridEditor>> getResult = () =>
-            {
-                var editors = new List<GridEditor>();
-                var gridConfig = HttpContext.Current.Server.MapPath("~/Config/grid.editors.config.js");
-                if (System.IO.File.Exists(gridConfig))
-                {
-                    try
-                    {
-                        var arr = JArray.Parse(System.IO.File.ReadAllText(gridConfig));
-                        var parsed = JsonConvert.DeserializeObject<IEnumerable<GridEditor>>(arr.ToString()); ;
-                        editors.AddRange(parsed);
 
-                        if (onlyLeBlenderEditor)
-                        {
-                            editors = editors.Where(r => r.View.Equals("/App_Plugins/LeBlender/core/LeBlendereditor.html", StringComparison.InvariantCultureIgnoreCase) ||
-                                r.View.Equals("/App_Plugins/LeBlender/editors/leblendereditor/LeBlendereditor.html", StringComparison.InvariantCultureIgnoreCase)).ToList();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Error<Helper>("Could not parse the contents of grid.editors.config.js into a JSON array", ex);
-                    }
-                }
-                return editors;
-            };
+            var list = GetEditorsFromConfig(onlyLeBlenderEditor);
 
-            var result = (List<GridEditor>)HttpContext.Current.Cache["LeBlenderGridEditorsList"];
+            var result = (List<LeBlenderGridEditorModel>)HttpContext.Current.Cache["LeBlenderGridEditorsList"];
             if (result == null || !onlyLeBlenderEditor)
-            { 
-                result = getResult();
+            {
+                result = list;
                 HttpContext.Current.Cache.Add("LeBlenderGridEditorsList", result, null, DateTime.Now.AddDays(1), System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.High, null);
             }
 
-            return (IEnumerable<GridEditor>)result;
+            return result;
 
         }
 
@@ -144,73 +146,75 @@ namespace Lecoati.LeBlender.Extension
         /// </summary>
         /// <param name="model"></param>
         /// <returns>string responseMessage</returns>
-        internal static string UpdateGridNodes(GridUpdateModel model)
+        internal static void UpdateGridNodes(string oldValue, string newValue, string fieldName, string gridEditorAlias = null)
         {
-            var responseMessage = "";
             try
             {
-                if (model != null)
+                var contentService = UmbracoContext.Current.Application.Services.ContentService;
+                List<IContent> nodes = new List<IContent>();
+                var rootContent = contentService.GetRootContent();
+                if (rootContent != null && rootContent.Any())
                 {
-                    var contentService = UmbracoContext.Current.Application.Services.ContentService;
-                    List<IContent> nodes = new List<IContent>();
-                    var rootContent = contentService.GetRootContent();
-                    if (rootContent != null && rootContent.Any())
+                    foreach (var rootNode in rootContent)
                     {
-                        foreach (var rootNode in rootContent)
-                        {
-                            GetGridNodes(rootNode, nodes);
-                        }
+                        GetGridNodes(rootNode, nodes);
                     }
+                }
 
-                    if (nodes.Any())
+                if (nodes.Any())
+                {
+                    foreach (var node in nodes)
                     {
-                        foreach (var node in nodes)
+                        if (node.Properties.Any(x => x.PropertyType.PropertyEditorAlias == "Umbraco.Grid"))
                         {
-                            if (node.Properties.Any(x => x.PropertyType.PropertyEditorAlias == "Umbraco.Grid"))
+                            var gridProperties = node.Properties.Where(x => x.PropertyType.PropertyEditorAlias == "Umbraco.Grid").ToList();
+                            foreach (var gridProperty in gridProperties)
                             {
-                                var gridProperties = node.Properties.Where(x => x.PropertyType.PropertyEditorAlias == "Umbraco.Grid").ToList();
-                                foreach (var gridProperty in gridProperties)
+                                if (gridProperty.Value != null)
                                 {
-                                    if (gridProperty.Value != null)
+
+                                    var jsonObject = JObject.Parse(gridProperty.Value.ToString());
+
+                                    if (!string.IsNullOrEmpty(gridEditorAlias))
                                     {
-                                        var jsonObject = JObject.Parse(gridProperty.Value.ToString());
-                                        UpdateGridEditorAlias(jsonObject, model);
-                                        node.SetValue(gridProperty.Alias, jsonObject.ToString());
-                                        if (node.Published)
+                                        var values = jsonObject.SelectTokens($"sections[*].rows[*].areas[*].controls[?(@.editor.alias == '{gridEditorAlias}')]");
+                                        foreach(var item in values)
                                         {
-                                            contentService.SaveAndPublishWithStatus(node, raiseEvents: false);
+                                            UpdateGridEditorValue(item, oldValue, newValue, fieldName);
                                         }
-                                        else
-                                        {
-                                            contentService.Save(node, raiseEvents: false);
-                                        }
+                                    }
+                                    else
+                                    {
+                                        UpdateGridEditorValue(jsonObject, oldValue, newValue, fieldName);
+                                    }
+
+                                    node.SetValue(gridProperty.Alias, jsonObject.ToString());
+                                    if (node.Published)
+                                    {
+                                        contentService.SaveAndPublishWithStatus(node, raiseEvents: false);
+                                    }
+                                    else
+                                    {
+                                        contentService.Save(node, raiseEvents: false);
                                     }
                                 }
                             }
                         }
-                        responseMessage = $"Successfully updated Editor Alias. Old alias: {model.OldValue}. New alias: {model.NewValue}";
                     }
-                }
-                else
-                {
-                    responseMessage = "GridUpdateModel value was null, failed to update gridEditor";
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.Error<Helper>($"Could not update grid items", ex);
-                responseMessage = ex.Message;
+                LogHelper.Error<Helper>($"Could not update Editor Alias. Old alias: {oldValue}. New alias: {newValue}", ex);
             }
-
-            return responseMessage;
         }
-
 
         /// <summary>
         /// Get and cache LeBlender Controllers
         /// </summary>
         /// <returns></returns>
-        internal static IEnumerable<Type> GetLeBlenderControllers() {
+        internal static IEnumerable<Type> GetLeBlenderControllers()
+        {
 
             Func<List<Type>> getResult = () =>
             {
@@ -240,7 +244,8 @@ namespace Lecoati.LeBlender.Extension
             Type result = null;
             var controllers = GetLeBlenderControllers();
 
-            if (controllers.Any()) {
+            if (controllers.Any())
+            {
                 var controllersFilter = controllers.Where(t => t.Name.Equals(editorAlias + "Controller", StringComparison.InvariantCultureIgnoreCase));
                 result = controllersFilter.Any() ? controllersFilter.First() : null;
             }
@@ -252,7 +257,8 @@ namespace Lecoati.LeBlender.Extension
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        internal static string BuildCacheKey(string guid) {
+        internal static string BuildCacheKey(string guid)
+        {
             var cacheKey = new StringBuilder();
             cacheKey.Append("LEBLENDEREDITOR");
             cacheKey.Append(guid);
@@ -360,23 +366,24 @@ namespace Lecoati.LeBlender.Extension
         /// <param name="token"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        private static bool UpdateGridEditorAlias(JToken token, GridUpdateModel model)
+        private static bool UpdateGridEditorValue(JToken token, string oldValue, string newValue, string fieldName)
         {
             if (token.HasValues)
             {
                 foreach (JToken child in token.Children())
                 {
-                    UpdateGridEditorAlias(child, model);
+                    UpdateGridEditorValue(child, oldValue, newValue, fieldName);
                 }
                 // we are done parsing and this is a parent node
                 return true;
             }
+
             var name = ((JProperty)token.Parent).Name;
-            if (name == "alias")
+            if (name == fieldName)
             {
-                if (((JProperty)token.Parent).Value.ToString() == model.OldValue)
+                if (((JProperty)token.Parent).Value.ToString() == oldValue)
                 {
-                    ((JProperty)token.Parent).Value = model.NewValue;
+                    ((JProperty)token.Parent).Value = newValue;
                 }
             }
             return false;

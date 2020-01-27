@@ -107,24 +107,27 @@
             }
         }
     ],
-    "javascript": [
-		
-		"~/App_Plugins/LeBlender/Common/Services/requestHelper.Service.js",
-		"~/App_Plugins/LeBlender/Common/Filter/OrderObjectBy.filter.js",
-		
-		"~/App_Plugins/LeBlender/Common/Directive/LayersResizableDraggable.js",
-		"~/App_Plugins/LeBlender/Common/Directive/blendereditorwrapper.js",
-		"~/App_Plugins/LeBlender/Common/Directive/propertygrideditorwrapper.js",
+  "javascript": [
 
-		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/edit.js",
-		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/delete.js",
-		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/sort.js",
+    "~/App_Plugins/LeBlender/Common/Services/requestHelper.Service.js",
+    "~/App_Plugins/LeBlender/Common/Filter/OrderObjectBy.filter.js",
+
+    "~/App_Plugins/LeBlender/Common/Directive/LayersResizableDraggable.js",
+    "~/App_Plugins/LeBlender/Common/Directive/blendereditorwrapper.js",
+    "~/App_Plugins/LeBlender/Common/Directive/propertygrideditorwrapper.js",
+
+    "~/App_Plugins/LeBlender/Common/config/requestInterceptor.js",
+
+    "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/edit.js",
+    "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/delete.js",
+    "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/sort.js",
+    "~/App_Plugins/LeBlender/Backoffice/GridEditorManager/transferEditor.js",
 
     "~/App_Plugins/LeBlender/editors/leblendereditor/inline-grid.directive.js",
-		"~/App_Plugins/LeBlender/editors/leblendereditor/leblenderproperties.controller.js",
-		"~/App_Plugins/LeBlender/editors/leblendereditor/leblendereditor.controller.js",
-		"~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.prevalues.controller.js",
-		"~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.controller.js",		
+    "~/App_Plugins/LeBlender/editors/leblendereditor/leblenderproperties.controller.js",
+    "~/App_Plugins/LeBlender/editors/leblendereditor/leblendereditor.controller.js",
+    "~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.prevalues.controller.js",
+    "~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.controller.js"
 
-    ]
+  ]
 }

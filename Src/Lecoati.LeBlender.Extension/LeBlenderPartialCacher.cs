@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using System.Web.Script.Serialization;
-using System.Text.RegularExpressions;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Web;
 
 namespace Lecoati.LeBlender.Extension
 {

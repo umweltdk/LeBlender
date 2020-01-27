@@ -18,7 +18,7 @@
                     return scope.layer;
                 }, function (modelValue) {
 
-                    var setPosition = function(position) {
+                    var setPosition = function (position) {
                         scope.layer.dataX = position.left;
                         scope.layer.dataY = position.top;
                         scope.layer.dataXPer = (100 / scope.parentwidth) * scope.layer.dataX;

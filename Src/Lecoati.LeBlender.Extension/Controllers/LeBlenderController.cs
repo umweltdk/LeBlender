@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Web;
 using System.Web.Mvc;
 using Umbraco.Web.Mvc;
-
 using Lecoati.LeBlender.Extension.Models;
-using Newtonsoft.Json;
-using Umbraco.Web.Editors;
 using Umbraco.Core.Logging;
 
 namespace Lecoati.LeBlender.Extension.Controllers
@@ -33,7 +27,6 @@ namespace Lecoati.LeBlender.Extension.Controllers
             var controllerType = Helper.GetLeBlenderController(editorAlias);
             if (controllerType != null)
             {
-
                 try
                 {
                     // Load a controller instance
@@ -78,7 +71,6 @@ namespace Lecoati.LeBlender.Extension.Controllers
             }
 
             return PartialView(frontView, model);
-            
         }
     }
 }
