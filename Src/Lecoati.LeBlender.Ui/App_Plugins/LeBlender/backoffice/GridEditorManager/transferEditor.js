@@ -15,17 +15,16 @@
 		};
 
 		function setMessage(response) {
+			$scope.transferring = false;
+			$scope.transferDone = true;
 			$scope.transfer.message = response.data;
 			if (response.status !== 200) {
 				$scope.transfer.textColor = "red";
+			} else {
+				$timeout(function () {
+					navigationService.hideMenu();
+				}, 7000);
 			}
-			$scope.transferring = false;
-			$scope.transferDone = true;
-
-			$timeout(function () {
-				$scope.transferDone = false;
-				navigationService.hideMenu();
-			}, 7000);
 		}
 
 		function init() {
