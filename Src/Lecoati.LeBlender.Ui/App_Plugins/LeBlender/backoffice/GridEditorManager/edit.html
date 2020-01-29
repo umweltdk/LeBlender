@@ -1,43 +1,27 @@
-﻿
-<form name="editormanagerForm"
-      ng-controller="leblender.editormanager.edit"
-      ng-show="loaded"
-      ng-submit="save()"
-      val-form-manager>
-
+﻿<form name="editormanagerForm" ng-controller="leblender.editormanager.edit" ng-show="loaded" ng-submit="save()"
+    val-form-manager>
     <umb-panel>
-
         <umb-header>
-
             <div class="span7">
                 <umb-content-name placeholder="@placeholders_entername" ng-model="model.value.name" />
             </div>
-
-            <!--<div class="span5">
-                <div class="btn-toolbar pull-right umb-btn-toolbar">
-                    <umb-options-menu ng-show="currentNode"
-                                        current-node="currentNode"
-                                        current-section="{{currentSection}}">
-                    </umb-options-menu>
-                </div>
-            </div>-->
-
         </umb-header>
-
         <div class="umb-panel-body umb-scrollable row-fluid">
             <div class="tab-content form-horizontal" style="padding-bottom: 90px">
                 <div class="umb-pane">
 
                     <!-- editor name -->
                     <umb-control-group label="Grid editor" description="Select a grid editor">
-                        <select ng-change="propertyGridEditorChanged()" ng-options="type.editor.view as type.name for type in propertyGridEditors" ng-model="model.value.view" >
+                        <select ng-change="propertyGridEditorChanged()"
+                                ng-options="type.editor.view as type.name for type in propertyGridEditors"
+                                ng-model="model.value.view">
                             <option value="">- - custom - -</option>
                         </select>
                     </umb-control-group>
 
                     <!-- editor alias -->
                     <umb-control-group label="Grid editor alias" description="">
-                        <input class="umb-editor umb-textstring" type="text" ng-model="model.value.alias" required  />
+                        <input class="umb-editor umb-textstring" type="text" ng-model="model.value.alias" required />
                     </umb-control-group>
 
                     <!-- editor icon -->
@@ -65,7 +49,8 @@
                     <!-- config for custom field -->
                     <div ng-show="isCustom()">
                         <umb-control-group label="Config" description="Optional custom editor config">
-                            <textarea style="min-width: 66.6%; height: 100px;" type="text" ng-change="configChanged(textAreaconfig)" ng-model="textAreaconfig"  />
+                            <textarea style="min-width: 66.6%; height: 100px;" type="text"
+                                      ng-change="configChanged(textAreaconfig)" ng-model="textAreaconfig" />
                         </umb-control-group>
                     </div>
 
@@ -87,11 +72,16 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-
+        <div ng-show="saving">
+            <div class="working"></div>
+            <ul class="umb-load-indicator animated -half-second">
+                <li class="umb-load-indicator__bubble"></li>
+                <li class="umb-load-indicator__bubble"></li>
+                <li class="umb-load-indicator__bubble"></li>
+            </ul>
+        </div>
     </umb-panel>
-
 </form>

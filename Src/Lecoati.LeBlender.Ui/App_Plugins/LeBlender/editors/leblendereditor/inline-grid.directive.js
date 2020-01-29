@@ -1,5 +1,5 @@
 angular.module("umbraco").
-	directive('inlineGrid', function() {
+	directive('inlineGrid', function () {
 		return {
 			scope: {
 				name: "=",
@@ -9,17 +9,17 @@ angular.module("umbraco").
 			restrict: 'E',
 			replace: false,
 			templateUrl: '/App_Plugins/LeBlender/editors/leblendereditor/inline-grid.template.html',
-			controller: function($scope, $timeout, $element, assetsService, LeBlenderRequestHelper, umbPropEditorHelper) {
+			controller: function ($scope, $timeout, $element, assetsService, LeBlenderRequestHelper, umbPropEditorHelper) {
 				// Listener which reloads tinymce editor when control is moved.
 				var innerCell = $element.parents('.umb-cell-inner');
 				innerCell.on('sortstop', sortstopHandler);
 
-				$scope.$on('$destroy', function() {
+				$scope.$on('$destroy', function () {
 					innerCell.off('sortstop', sortstopHandler);
 				});
 
 				function sortstopHandler() {
-					$element.find('.umb-rte').each(function() {
+					$element.find('.umb-rte').each(function () {
 						var scope = angular.element(this).scope();
 
 						if (!scope) {
@@ -33,10 +33,10 @@ angular.module("umbraco").
 					});
 				}
 
-				$scope.searchEditor = function(alias) {
+				$scope.searchEditor = function (alias) {
 					var sEditor = undefined;
 					if ($scope.config.editors) {
-						_.each($scope.config.editors, function(editor) {
+						_.each($scope.config.editors, function (editor) {
 							if (editor.alias === alias) {
 								sEditor = editor
 							}
@@ -45,9 +45,9 @@ angular.module("umbraco").
 					return sEditor;
 				}
 
-				$scope.searchPropertyItem = function(item, alias) {
+				$scope.searchPropertyItem = function (item, alias) {
 					var sProperty = undefined;
-					_.each(item, function(property) {
+					_.each(item, function (property) {
 						if (property.editorAlias === alias) {
 							sProperty = property
 						}
@@ -55,11 +55,11 @@ angular.module("umbraco").
 					return sProperty;
 				}
 
-				var initEditor = function() {
-					_.each($scope.value, function(item) {
+				var initEditor = function () {
+					_.each($scope.value, function (item) {
 						var order = 0;
 						if ($scope.config.editors) {
-							_.each($scope.config.editors, function(editor) {
+							_.each($scope.config.editors, function (editor) {
 								var property = $scope.searchPropertyItem(item, editor.alias);
 								if (property) {
 									property.$editor = editor;
@@ -74,7 +74,7 @@ angular.module("umbraco").
 										editorAlias: editor.alias,
 										editorName: editor.name,
 										$editor: editor,
-										$order: order,
+										$order: editor.sortOrder,
 										$valid: false
 									};
 									item[editor.alias] = newProperty;
@@ -83,7 +83,7 @@ angular.module("umbraco").
 							})
 						}
 
-						_.each(item, function(property) {
+						_.each(item, function (property) {
 							if (!$scope.searchEditor(property.editorAlias)) {
 								delete item[property.editorAlias];
 							}
@@ -91,17 +91,17 @@ angular.module("umbraco").
 					})
 				}
 
-				$scope.updateEditor = function() {
+				$scope.updateEditor = function () {
 					if ($scope.value) {
-						var watchAppStart = $scope.$watch(function() {
+						var watchAppStart = $scope.$watch(function () {
 							var isLoadedCounter = 0
-							_.each($scope.config.editors, function(editor) {
+							_.each($scope.config.editors, function (editor) {
 								if (editor.$isLoaded) {
 									isLoadedCounter++
 								}
 							});
 							return isLoadedCounter;
-						}, function(newValue) {
+						}, function (newValue) {
 							if (newValue === $scope.config.editors.length) {
 								initEditor();
 								watchAppStart();
@@ -113,18 +113,20 @@ angular.module("umbraco").
 						/* load dataType Info */
 						/***************************************/
 						if ($scope.config.editors) {
-							_.each($scope.config.editors, function(editor) {
+							_.each($scope.config.editors, function (editor) {
 
 								if (!$scope.value.propretyType) {
 									$scope.value.propretyType = {};
 								}
+								if (editor.propretyType == null) {
+									editor.propretyType = {};
+								}
 
 								if (editor.dataType && !editor.$isLoaded) {
-									LeBlenderRequestHelper.getDataType(editor.dataType).then(function(data) {
-
+									LeBlenderRequestHelper.getDataType(editor.dataType).then(function (data) {
 										// Get config prevalues
 										var configObj = {};
-										_.each(data.preValues, function(p) {
+										_.each(data.preValues, function (p) {
 											configObj[p.key] = p.value;
 										});
 
