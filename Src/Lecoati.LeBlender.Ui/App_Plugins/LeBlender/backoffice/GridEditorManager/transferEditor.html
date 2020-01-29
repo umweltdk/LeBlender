@@ -1,0 +1,37 @@
+<div class="umb-panel" ng-controller="leblender.editormanager.transferEditor">
+    <div class="umb-panel-body">
+        <div ng-hide="transferDone">
+            <div ng-hide="transferUrls.length === 0">
+                <p>Please select destination:</p>
+                <select style="width:auto;" ng-model="remoteUrl">
+                    <option ng-repeat="url in transferUrls" value="{{url}}">
+                        {{url}}
+                    </option>
+                </select>
+            </div>
+            <p ng-show="transferUrls.length === 0">Could not get any valid transfer urls. Please add urls to courier.config or web.config</p>
+            <div class="umb-pane btn-toolbar umb-btn-toolbar">
+                <div class="control-group umb-control-group">
+                    <a href="" class="btn btn-link" ng-click="cancelTransfer()">
+                        <localize key="general_cancel">Cancel</localize>
+                    </a>
+                    <a href="" ng-disabled="remoteUrl == null" class="btn btn-primary" ng-click="remoteUrl == null || transferEditor(remoteUrl)">
+                        <span>Transfer {{transferAll ? 'editors' : 'editor'}}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div ng-show="transferDone">
+            <span ng-style="{'color':transfer.textColor}">{{transfer.message}}</span>
+        </div>
+    </div>
+    <div ng-show="transferring">
+        <div class="working"></div>
+        <ul class="umb-load-indicator animated -half-second">
+            <li class="umb-load-indicator__bubble"></li>
+            <li class="umb-load-indicator__bubble"></li>
+            <li class="umb-load-indicator__bubble"></li>
+        </ul>
+    </div>
+</div>
+

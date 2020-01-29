@@ -10,7 +10,7 @@
             template: '<ng-form name="propertyForm"><div ng-include="model.view"></div></ng-form>',
 
             controller: function ($scope) {
-              
+
                 var initEditorPath = function (property) {
                     if (property && property.$editor && property.$editor.propretyType) {
                         return property.$editor.propretyType.view;
@@ -22,7 +22,7 @@
                     label: $scope.property.$editor ? angular.copy($scope.property.$editor.name) : "",
                     config: $scope.property.$editor ? angular.copy($scope.property.$editor.propretyType.config) : {},
                     validation: {
-                        mandatory:false
+                        mandatory: false
                     },
                     value: angular.copy($scope.property.value),
                     view: initEditorPath($scope.property)

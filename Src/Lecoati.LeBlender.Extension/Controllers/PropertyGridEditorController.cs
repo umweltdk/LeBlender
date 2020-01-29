@@ -2,22 +2,14 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
-using Umbraco.Core.Cache;
 using Umbraco.Web;
 using Umbraco.Web.Editors;
-using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
-using Umbraco.Web.UI.Pages;
-
 using System.Text.RegularExpressions;
-using Umbraco.Core.IO;
 using Umbraco.Core.Logging;
-using Umbraco.Core.PropertyEditors;
 using Lecoati.LeBlender.Extension.Models.Manifest;
 
 namespace Lecoati.LeBlender.Extension.Controllers
@@ -67,11 +59,9 @@ namespace Lecoati.LeBlender.Extension.Controllers
 
         private IEnumerable<string> GetAllManifestFileContents(DirectoryInfo currDir)
         {
-
             DirectoryInfo _pluginsDir = new DirectoryInfo(HttpContext.Current.Server.MapPath("~/App_Plugins"));
 
             var depth = FolderDepth(_pluginsDir, currDir);
-
             if (depth < 1)
             {
                 var dirs = currDir.GetDirectories();
@@ -131,11 +121,8 @@ namespace Lecoati.LeBlender.Extension.Controllers
                     };
                     result.Add(manifest);
                 }
-
             }
             return result;
         }
-
     }
-
 }

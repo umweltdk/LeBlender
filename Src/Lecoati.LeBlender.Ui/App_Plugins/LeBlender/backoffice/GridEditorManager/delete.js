@@ -1,47 +1,78 @@
 ﻿angular.module("umbraco").controller("leblender.editormanager.delete",
-    function ($scope, assetsService, $http, LeBlenderRequestHelper, dialogService, $routeParams, navigationService, treeService) {
+	function ($scope, $timeout, LeBlenderRequestHelper, navigationService, treeService, assetsService) {
 
-    $scope.delete = function (id) {
-        if ($scope.model.value && id) {
-            $scope.editors.splice($scope.indexModel, 1);
-            LeBlenderRequestHelper.setGridEditors($scope.editors).then(function (response) {
-                treeService.removeNode($scope.currentNode);
-                navigationService.hideMenu();
-            });
-        }
-    };
+		$scope.delete = function () {
+			$scope.deleting = true;
+			if ($scope.deleteAll) {
+				LeBlenderRequestHelper.deleteAllEditors($scope.editors).then(function (response) {
+					setMessage(response);
+				});
+			} else {
+				$scope.editors.splice($scope.indexModel, 1);
+				LeBlenderRequestHelper.deleteGridEditor($scope.model.value.id).then(function (response) {
+					setMessage(response);
+				});
+			}
+		};
 
-    $scope.cancelDelete = function () {
-        navigationService.hideNavigation();
-    };
-    
-    LeBlenderRequestHelper.getGridEditors().then(function (response) {
+		$scope.cancelDelete = function () {
+			navigationService.hideNavigation();
+		};
 
-        // init model
-        $scope.editors = response.data
+		function setMessage(response) {
+			$scope.deletion.message = response.data;
+			$scope.deleting = false;
+			$scope.deletionDone = true;
+			if (response.status !== 200) {
+				$scope.deletion.textColor = "red";
+			} else {
+				$timeout(function () {
+					treeService.removeNode($scope.currentNode);
+					navigationService.hideMenu();
+				}, 7000);
+			}
+		}
 
-        // Init model value
-        $scope.model = {
-            value: {
-                name: "",
-                alias: "",
-                view: "",
-                icon: ""
-            }
-        };
+		function init() {
+			$scope.deleting = false;
+			$scope.deletionDone = false;
+			$scope.deletion = {
+				message: "",
+				textColor: "green"
+			};
 
-        // look for the current editor
-        _.each($scope.editors, function (editor, editorIndex) {
-            if (editor.alias === $scope.currentNode.id) {
-                $scope.indexModel = editorIndex;
-                angular.extend($scope, {
-                    model: {
-                        value: editor
-                    }
-                });
-            }
-        });
+			$scope.deleteAll = $scope.dialogOptions.currentAction.metaData.DeleteAll || false;
 
-    });
+			LeBlenderRequestHelper.getGridEditors().then(function (response) {
+				// init model
+				$scope.editors = response;
 
-});
+				// Init model value
+				$scope.model = {
+					value: {
+						name: "",
+						alias: "",
+						view: "",
+						icon: ""
+					}
+				};
+
+				// look for the current editor
+				_.each($scope.editors, function (editor, editorIndex) {
+					if (editor.alias === $scope.currentNode.id) {
+						$scope.indexModel = editorIndex;
+						angular.extend($scope, {
+							model: {
+								value: editor
+							}
+						});
+					}
+				});
+				$scope.deleteText = $scope.deleteAll ? 'all editors?' : 'editor with name: ' + $scope.model.value.name + ' - alias: ' + $scope.currentNode.id + '?';
+			});
+		}
+
+		init();
+		assetsService.loadCss("/App_Plugins/LeBlender/Backoffice/GridEditorManager/gridEditorManager.css");
+
+	});

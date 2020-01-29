@@ -1,19 +1,10 @@
-﻿//clear cache on publish
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Umbraco.Core;
-using Umbraco.Core.Models;
 using Umbraco.Core.Logging;
-using Umbraco.Core.Publishing;
-using Umbraco.Web;
-using umbraco.interfaces;
 using System.Web;
-using Lecoati.LeBlender.Extension;
+using Lecoati.LeBlender.Extension.Helpers;
 
 namespace Lecoati.LeBlender.Extension.Events
 {
@@ -23,7 +14,6 @@ namespace Lecoati.LeBlender.Extension.Events
         protected override void ApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
             base.ApplicationInitialized(umbracoApplication, applicationContext);
-
             RouteTable.Routes.MapRoute(
                 "leblender",
                 "umbraco/backoffice/leblender/helper/{action}",
@@ -32,14 +22,19 @@ namespace Lecoati.LeBlender.Extension.Events
                     controller = "Helper",
                 }
             );
+            RouteTable.Routes.MapRoute(
+              name: "Transfer",
+              url: "umbraco/api/Transfer/{action}",
+              defaults: new { controller = "Transfer" }
+            );
         }
 
         protected override void ApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
-
             // Upgrate default view path for LeBlender 1.0.0
             var gridConfig = HttpContext.Current.Server.MapPath("~/Config/grid.editors.config.js");
-            if (System.IO.File.Exists(gridConfig))
+            var gridConfigExists = System.IO.File.Exists(gridConfig);
+            if (gridConfigExists)
             {
                 try
                 {
@@ -63,14 +58,12 @@ namespace Lecoati.LeBlender.Extension.Events
                 }
             }
 
-            base.ApplicationStarting(umbracoApplication, applicationContext);
-            PublishingStrategy.Published += PublishingStrategy_Published;
+            var databaseHelper = new DatabaseHelper();
+            if (databaseHelper.CreateTables() && gridConfigExists)
+            {
+                //Transfer grid.editor.config items to database
+                databaseHelper.ImportGridEditorConfig();
+            }
         }
-
-        private void PublishingStrategy_Published(IPublishingStrategy sender, Umbraco.Core.Events.PublishEventArgs<Umbraco.Core.Models.IContent> e)
-        {
-            ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheByKeySearch("LEBLENDEREDITOR");
-        }
-
     }
 }
