@@ -16,6 +16,8 @@
 
 		function setMessage(response) {
 			$scope.transfer.message = response.data;
+			$scope.tansferring = false;
+			$scope.transferDone = true;
 			if (response.status !== 200) {
 				$scope.transfer.textColor = "red";
 			} else {
