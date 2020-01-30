@@ -303,6 +303,7 @@
     <Compile Include="Controllers\LeBlenderEditorManagerTreeController.cs" />
     <Compile Include="Controllers\TransferController.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
+    <Compile Include="Helpers\JsonRenameHelper.cs" />
     <Compile Include="Helpers\RuntimeCacheHelper.cs" />
     <Compile Include="Models\LeBlenderPropertyModel.cs" />
     <Compile Include="Models\GridEditorsConfig\Editor.cs" />
