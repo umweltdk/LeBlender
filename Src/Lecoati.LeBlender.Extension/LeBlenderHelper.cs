@@ -1,4 +1,5 @@
 ﻿using Lecoati.LeBlender.Extension.Controllers;
+using Lecoati.LeBlender.Extension.Helpers;
 using Lecoati.LeBlender.Extension.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -181,6 +182,20 @@ namespace Lecoati.LeBlender.Extension
                                         foreach(var item in values)
                                         {
                                             UpdateGridEditorValue(item, oldValue, newValue, fieldName);
+                                            if(item["value"] != null)
+                                            {
+                                                JArray itemValues = (JArray)item["value"];
+                                                if (itemValues != null && itemValues.Any())
+                                                {
+                                                    foreach (JObject itemValue in itemValues)
+                                                    {
+                                                        if (itemValue.Property(oldValue) != null)
+                                                        {
+                                                            itemValue.Property(oldValue).Rename(newValue);
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                     else
