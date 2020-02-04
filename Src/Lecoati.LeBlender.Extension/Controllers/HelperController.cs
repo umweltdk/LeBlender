@@ -43,6 +43,41 @@ namespace Lecoati.LeBlender.Extension.Controllers
             return Content(message);
         }
 
+        [HttpGet]
+        public ActionResult GetEditorByAlias(string alias)
+        {
+            try
+            {
+                var cachedEditors = RuntimeCacheHelper.GetCachedItem<IOrderedEnumerable<LeBlenderGridEditorModel>>("LeBlenderEditors");
+                var dbHelper = new DatabaseHelper();
+                if (cachedEditors.Any(x => x.Alias == alias))
+                {
+                    var editorsWithAlias = cachedEditors.Where(x => x.Alias == alias).ToList();
+                    if (editorsWithAlias.Count > 1)
+                    {
+                        return Content("Too many editors with the same alias, can't determine which one is needed");
+                    }
+                    else
+                    {
+                        var editor = cachedEditors.FirstOrDefault(x => x.Alias == alias);
+                        editor.IsLeblender = dbHelper.IsLeblenderEditor(editor.Id);
+                        return Content(JsonConvert.SerializeObject(editor));
+                    }
+                }
+                else
+                {
+                    var editor = dbHelper.GetGridEditorByAlias(alias);
+                    editor.IsLeblender = dbHelper.IsLeblenderEditor(editor.Id);
+                    return Content(JsonConvert.SerializeObject(editor));
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<HelperController>($"Error while trying to determine if editor with alias: {alias} is a LeBlender editor", ex);
+                return Content($"Error while trying to determine if editor with alias: {alias} is a LeBlender editor. Ex: {ex.Message}");
+            }
+        }
+
 
         [HttpPost]
         [ValidateInput(false)]

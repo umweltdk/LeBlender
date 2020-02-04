@@ -278,6 +278,47 @@ namespace Lecoati.LeBlender.Extension.Helpers
             }
         }
 
+        internal bool IsLeblenderEditor(int LeBlenderGridEditorId)
+        {
+            var configs = GetEditorConfigs(LeBlenderGridEditorId);
+            return configs.Any(x => x.HasProperties);
+        }
+
+        internal List<LeBlenderConfigModel> GetEditorConfigs(int LeBlenderGridEditorId)
+        {
+            return dbContext.Database.Fetch<LeBlenderConfigModel>("WHERE LeBlenderGridEditorId = @0", LeBlenderGridEditorId);
+        }
+
+        internal LeBlenderGridEditorModel GetGridEditorByAlias(string alias)
+        {
+            var editors = dbContext.Database.Fetch<LeBlenderGridEditorModel>("WHERE Alias = @0", alias);
+            if(editors.Count > 1)
+            {
+                LogHelper.Warn<DatabaseHelper>($"Multiple editors with the alias: {alias} found");
+                return null;
+            }
+
+            var editor = editors.FirstOrDefault();
+            var editorProperties = dbContext.Database.Fetch<LeBlenderConfigModel>("WHERE LeBlenderGridEditorId = @0", editor.Id);
+            var dict = new Dictionary<string, object>();
+            editor.IsLeblender = false;
+            foreach (var editorProperty in editorProperties)
+            {
+                if (editorProperty.HasProperties)
+                {
+                    editor.IsLeblender = true;
+                    var editorConfigValues = dbContext.Database.Fetch<LeBlenderPropertyModel>("WHERE LeBlenderConfigId = @0", editorProperty.Id).OrderBy(x => x.SortOrder);
+                    dict.Add(editorProperty.Alias, editorConfigValues);
+                }
+                else
+                {
+                    dict.Add(editorProperty.Alias, editorProperty.Data);
+                }
+            }
+            editor.Config = dict;
+            return editor;
+        }
+
         internal void DelteGridEditor(int id)
         {
             var gridEditorConfigs = dbContext.Database.Fetch<LeBlenderConfigModel>("WHERE LeBlenderGridEditorId = @0", id);
