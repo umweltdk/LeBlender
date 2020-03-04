@@ -140,6 +140,7 @@ namespace Lecoati.LeBlender.Extension.Helpers
                         }
                     }
                     gridEditor.Config = dict;
+                    gridEditor.IsLeblender = isLeblenderEditor;
                     if (onlyLeBlenderEditor)
                     {
                         if (isLeblenderEditor)
