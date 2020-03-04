@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Umwelt.LeBlender</id>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <title>Umbraco LeBlender</title>
         <authors>Umwelt</authors>
         <owners>Umwelt</owners>
         <projectUrl>https://github.com/umweltdk/leblender</projectUrl>
         <description>Stores grideditors in the database, and enables possibility of sharing editors across environments</description>
-        <summary>LECOATI.LeBlender forked and modified by Umwelt. LeBlender version 1.0.9-beta2 - Umwelt version 1.0.1</summary>
+        <summary>LECOATI.LeBlender forked and modified by Umwelt. LeBlender version 1.0.9-beta2 - Umwelt version 1.0.2</summary>
         <language>en-US</language>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
         <tags></tags>
