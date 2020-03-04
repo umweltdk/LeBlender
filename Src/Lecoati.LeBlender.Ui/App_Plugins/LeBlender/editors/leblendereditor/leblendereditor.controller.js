@@ -87,6 +87,12 @@
 			}
 		}
 
+		if ($scope.control.config === undefined || $scope.control.config === null) {
+			$scope.control.config = {};
+		}
+
+		$scope.control.config.isLeblender = $scope.control.editor.isLeblender;
+
 		$scope.setPreview = function () {
 			if ($scope.control.editor.config
 				&& ($scope.control.value || !$scope.control.editor.config.editors || $scope.control.editor.config.editors.length == 0)

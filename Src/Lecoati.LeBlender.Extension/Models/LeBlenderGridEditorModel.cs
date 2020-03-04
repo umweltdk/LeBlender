@@ -53,6 +53,10 @@ namespace Lecoati.LeBlender.Extension.Models
         public int SortOrder { get; set; }
 
         [ResultColumn]
+        [JsonProperty("isLeblender")]
+        public bool IsLeblender { get; set; }
+
+        [ResultColumn]
         [JsonProperty("config")]
         public IDictionary<string, object> Config { get; set; }
 
