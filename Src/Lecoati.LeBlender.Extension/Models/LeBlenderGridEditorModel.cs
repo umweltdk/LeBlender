@@ -8,7 +8,7 @@ namespace Lecoati.LeBlender.Extension.Models
 {
     [TableName("LeBlenderGridEditor")]
     [PrimaryKey("Id", autoIncrement = true)]
-    internal class LeBlenderGridEditorModel
+    public class LeBlenderGridEditorModel
     {
 
         public LeBlenderGridEditorModel()
