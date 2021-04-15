@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Umwelt.LeBlender</id>
+        <version>1.0.3</version>
+        <title>Umbraco LeBlender</title>
+        <authors>Umwelt</authors>
+        <owners>Umwelt</owners>
+        <projectUrl>https://github.com/umweltdk/leblender</projectUrl>
+        <description>Stores grideditors in the database, and enables possibility of sharing editors across environments</description>
+        <summary>LECOATI.LeBlender forked and modified by Umwelt. LeBlender version 1.0.9-beta2 - Umwelt version 1.0.2</summary>
+        <language>en-US</language>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <tags></tags>
+		<iconUrl>https://umwelt.dk/assets/favicon.ico</iconUrl>
+		<dependencies />
+		<repository type="git" url="https://github.com/umweltdk/LeBlender" />
+    </metadata>
+	<files>
+		<file src="..\Lecoati.LeBlender.Ui\App_Plugins\LeBlender\**\*.*" target="Content\App_Plugins\LeBlender" />
+		<file src="..\Lecoati.LeBlender.Extension\bin\Lecoati.LeBlender.Extension.dll" target="lib\Lecoati.LeBlender.Extension.dll" />
+        <file src="..\..\webconfig\*.*" target="Content" />
+	</files>
+</package>
